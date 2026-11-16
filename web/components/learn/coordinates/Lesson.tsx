@@ -14,6 +14,7 @@ import {
 } from "../../../lib/learn/coordinates-data";
 import { printed } from "../../../lib/learn/coordinates";
 import { Band } from "../../site/Band";
+import { type Chapter, Chapters } from "../../site/Chapters";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
@@ -79,6 +80,21 @@ const plusOne = (
   </M>
 );
 
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "question-h", label: "The question" },
+  { id: "concept-h", label: "Points, frames and affine maps" },
+  { id: "example-h", label: "Two possessions" },
+  { id: "time-h", label: "Two clocks on one axis" },
+  { id: "table-h", label: "One table, and the sign kept apart" },
+  { id: "matches-h", label: "From two possessions to every match" },
+  { id: "matters-h", label: "Why it matters" },
+  { id: "limitations-h", label: "Limitations" },
+  { id: "try-h", label: "Try it yourself" },
+  { id: "reproduce-h", label: "Reproduce it" },
+  { id: "reading-h", label: "Further reading" },
+];
+
 export function Lesson({ sql }: { sql: string }) {
   const views = [frameView(BB), frameView(FB)];
   const tracks = [clockTrack(BB), clockTrack(FB)];
@@ -101,6 +117,7 @@ export function Lesson({ sql }: { sql: string }) {
           little geometry and a little arithmetic on time make that work, and both fit on one page.
         </p>
       </LessonHead>
+      <Chapters items={CHAPTERS} />
       <Band>
         <section aria-labelledby="question-h">
           <h2 id="question-h">The question</h2>

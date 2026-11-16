@@ -4,6 +4,7 @@ import { Lineage } from "../../components/platform/Lineage";
 import { Stack } from "../../components/platform/Stack";
 import { StepGantt } from "../../components/platform/StepGantt";
 import { Band, PageHead } from "../../components/site/Band";
+import { type Chapter, Chapters } from "../../components/site/Chapters";
 import { pluralize } from "../../lib/format";
 import { LEAGUE } from "../../lib/euroleague/data";
 import { firstBeforeBars, firstEvents, LINEAGE, PLATFORM, poseShare, rawSourceMeta, silverModelRows } from "../../lib/platform";
@@ -41,6 +42,17 @@ function formatMatchField(field: (typeof MATCH_FIELDS)[number], value: string | 
   if (field === "sport" || field === "match_id") return String(value);
   return (value as number).toLocaleString("en-US");
 }
+
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "steps", label: "Time, per step" },
+  { id: "sources", label: "Sources" },
+  { id: "guarantees", label: "Guarantees" },
+  { id: "postgres", label: "Postgres" },
+  { id: "lineage", label: "Lineage" },
+  { id: "matches", label: "Bytes and rows, per match" },
+  { id: "silver-models", label: "Silver models" },
+];
 
 export default function PlatformPage() {
   const { run, matches, season_files: seasonFiles, guarantees: g } = PLATFORM;
@@ -82,6 +94,7 @@ export default function PlatformPage() {
           </p>
         )}
       </PageHead>
+      <Chapters items={CHAPTERS} />
       <Band dark>
         <Architecture />
         <Flow layers={PLATFORM.layers} />
@@ -93,7 +106,7 @@ export default function PlatformPage() {
             clock.
           </p>
         </footer>
-        <h2>Time, per step</h2>
+        <h2 id="steps">Time, per step</h2>
         {first ? (
           <p data-gantt-note data-placed="end">
             The {PLATFORM.steps.length} steps of the run, grouped by layer, from{" "}
@@ -308,7 +321,7 @@ export default function PlatformPage() {
         <Lineage lineage={LINEAGE} />
       </Band>
       <Band>
-        <h2>Bytes and rows, per match</h2>
+        <h2 id="matches">Bytes and rows, per match</h2>
         <p>
           The {matches.length} matches behind every figure above, read from{" "}
           <a href="/data/platform.json">platform.json</a>&apos;s own <code>matches[]</code>; the

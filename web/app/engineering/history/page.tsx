@@ -8,6 +8,7 @@ import {
   StepTable,
 } from "../../../components/platform/HistoryCharts";
 import { Band, PageHead } from "../../../components/site/Band";
+import { type Chapter, Chapters } from "../../../components/site/Chapters";
 import { freshnessRows, HISTORY, MIN_EARLIER, modeSummary, runLabel, sameTestCount, seriesOf, stepMode } from "../../../lib/history";
 import { PLATFORM } from "../../../lib/platform";
 
@@ -41,6 +42,13 @@ function Legend() {
     </ul>
   );
 }
+
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "steps", label: "Step time, run by run" },
+  { id: "quality", label: "Quality, run by run" },
+  { id: "freshness", label: "Freshness" },
+];
 
 export default function HistoryPage() {
   const entries = [...HISTORY.entries].sort((a, b) => a.id.localeCompare(b.id));
@@ -107,8 +115,9 @@ export default function HistoryPage() {
           one.
         </p>
       </PageHead>
+      <Chapters items={CHAPTERS} />
       <Band dark>
-        <h2>Step time, run by run</h2>
+        <h2 id="steps">Step time, run by run</h2>
         <p>
           One strip per step, each run a dot on a logarithmic seconds axis. The last run of a step is
           judged against the earlier runs of the same selection and the same mode (the record&apos;s{" "}
@@ -230,7 +239,7 @@ export default function HistoryPage() {
         )}
       </Band>
       <Band>
-        <h2>Quality, run by run</h2>
+        <h2 id="quality">Quality, run by run</h2>
         <p>
           The dbt tests each run&apos;s steps ran (summed from a v2 record, or for a v1 from the{" "}
           <code>run_results.json</code> inside its window) and its contract tests, oldest first.{" "}
@@ -243,7 +252,7 @@ export default function HistoryPage() {
         <QualityTable entries={entries} />
       </Band>
       <Band dark>
-        <h2>Freshness</h2>
+        <h2 id="freshness">Freshness</h2>
         <p data-freshness-note>
           How old the data was when <a href="/data/platform.json">platform.json</a> was published, at{" "}
           <span data-field="published">{fresh.published_utc.replace("T", " ").replace("+00:00", " UTC")}</span>: for each silver partition and

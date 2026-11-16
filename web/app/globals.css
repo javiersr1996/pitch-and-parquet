@@ -4437,3 +4437,161 @@ figure.run-here {
       box-shadow 0.15s;
   }
 }
+
+/* The chapters of a long page (P32, task 210): fixed at the top while the page scrolls, a strip of
+   its h2s that scrolls sideways like the header's (faded at an edge where more wait), the current
+   one lit like the header's current link, and a cyan bar along the bottom for how far down the page
+   is. From 1888 px the wrap leaves room in the left margin, and the strip turns into a rail there.
+   A heading that a link or the address lands on clears the strip. */
+.chapters {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--neon-bg);
+  border-bottom: 1px solid var(--rule);
+}
+
+.chapters-row {
+  position: relative;
+}
+
+.chapters ol {
+  display: flex;
+  gap: 0 var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.chapters ol::-webkit-scrollbar {
+  display: none;
+}
+
+.chapters li {
+  flex: none;
+  max-width: none;
+}
+
+.chapters a {
+  display: block;
+  padding: var(--space-2) 0;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font-neon);
+  white-space: nowrap;
+  color: var(--fg-muted);
+  text-decoration: none;
+}
+
+.chapters a:hover {
+  color: var(--fg-strong);
+}
+
+.chapters a:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+.chapters a[aria-current] {
+  color: var(--neon);
+  border-bottom-color: var(--neon);
+}
+
+.chapters-progress {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  pointer-events: none;
+}
+
+.chapters-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--neon);
+  box-shadow: 0 0 8px var(--neon-glow);
+  transform: scaleX(var(--progress, 0));
+  transform-origin: left;
+}
+
+main:has(> .chapters) [id] {
+  scroll-margin-top: 4rem;
+}
+
+@media (max-width: 117.98rem) {
+  .chapters ol:not([data-end="true"]) {
+    mask-image: linear-gradient(to right, #000 calc(100% - var(--space-7)), transparent);
+  }
+
+  .chapters ol[data-start="false"] {
+    mask-image: linear-gradient(to left, #000 calc(100% - var(--space-7)), transparent);
+  }
+
+  .chapters ol[data-start="false"]:not([data-end="true"]) {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 var(--space-7),
+      #000 calc(100% - var(--space-7)),
+      transparent
+    );
+  }
+}
+
+@media (min-width: 118rem) {
+  .chapters {
+    height: 0;
+    border-bottom: 0;
+    background: none;
+  }
+
+  .chapters-row {
+    position: absolute;
+    top: var(--space-6);
+    left: calc((100% - var(--wrap)) / 2 - 15rem);
+    width: 13rem;
+    max-width: none;
+    max-height: calc(100vh - 2 * var(--space-6));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+  }
+
+  .chapters ol {
+    flex-direction: column;
+    overflow: visible;
+    border-left: 1px solid var(--rule);
+  }
+
+  .chapters a {
+    margin-left: -1px;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 0;
+    border-left: 2px solid transparent;
+    white-space: normal;
+  }
+
+  .chapters a[aria-current] {
+    border-left-color: var(--neon);
+  }
+
+  .chapters-progress {
+    position: static;
+    flex: none;
+    order: -1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .chapters a {
+    transition:
+      color 0.15s,
+      border-color 0.15s;
+  }
+}

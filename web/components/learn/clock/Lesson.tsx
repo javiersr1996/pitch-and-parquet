@@ -6,6 +6,7 @@ import { qualityFigure } from "../../../lib/learn/gravity-data";
 import { figureAt, matchFig } from "../../../lib/learn/json-figure";
 import { HOOK, QUALITY } from "../../../lib/quality";
 import { Band } from "../../site/Band";
+import { type Chapter, Chapters } from "../../site/Chapters";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
@@ -56,6 +57,19 @@ const sum = (body: ReactNode) => (
   </>
 );
 
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "question-h", label: "The question" },
+  { id: "concept-h", label: "A line through two clocks" },
+  { id: "example-h", label: "One possession" },
+  { id: "matches-h", label: "From one possession to ten matches" },
+  { id: "matters-h", label: "Why it matters" },
+  { id: "limitations-h", label: "Limitations" },
+  { id: "try-h", label: "Try it yourself" },
+  { id: "reproduce-h", label: "Reproduce it" },
+  { id: "reading-h", label: "Further reading" },
+];
+
 export function Lesson({ sql }: { sql: string }) {
   return (
     <main id="main" className="page lesson learn-clock">
@@ -76,6 +90,7 @@ export function Lesson({ sql }: { sql: string }) {
           {l("slope_for_g")}.
         </p>
       </LessonHead>
+      <Chapters items={CHAPTERS} />
       <Band>
         <section aria-labelledby="question-h">
           <h2 id="question-h">The question</h2>

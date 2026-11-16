@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { REBOUND, reboundFig, reboundFigure } from "../../../lib/learn/rebound-data";
 import { raceAt, reboundFigures, type ReboundFigures } from "../../../lib/learn/rebound-figures";
 import { Band } from "../../site/Band";
+import { type Chapter, Chapters } from "../../site/Chapters";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
@@ -74,6 +75,19 @@ const norm = (inner: ReactNode) => (
   </>
 );
 
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "question-h", label: "The question" },
+  { id: "concept-h", label: "Time to arrive" },
+  { id: "example-h", label: "One rebound" },
+  { id: "matches-h", label: "From one rebound to ten matches" },
+  { id: "matters-h", label: "Why it matters" },
+  { id: "limitations-h", label: "Limitations" },
+  { id: "try-h", label: "Try it yourself" },
+  { id: "reproduce-h", label: "Reproduce it" },
+  { id: "reading-h", label: "Further reading" },
+];
+
 export function Lesson({ sql }: { sql: string }) {
   return (
     <main id="main" className="page lesson learn-rebound">
@@ -93,6 +107,7 @@ export function Lesson({ sql }: { sql: string }) {
           to that place, with no model at all, is the rebounder in {l("near_lo")} to {l("near_hi")}&nbsp;%.
         </p>
       </LessonHead>
+      <Chapters items={CHAPTERS} />
       <Band>
         <section aria-labelledby="question-h">
           <h2 id="question-h">The question</h2>

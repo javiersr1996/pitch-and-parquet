@@ -4,6 +4,7 @@ import { figureAt, matchFig } from "../../../lib/learn/json-figure";
 import { PASS, PASS_EXAMPLES } from "../../../lib/learn/pass-data";
 import { lessonPassFigures, type PassLessonFigures } from "../../../lib/learn/pass-figures";
 import { Band } from "../../site/Band";
+import { type Chapter, Chapters } from "../../site/Chapters";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
@@ -56,6 +57,20 @@ const norm = (inner: ReactNode) => (
   </>
 );
 
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "question-h", label: "The question" },
+  { id: "concept-h", label: "Chord and path" },
+  { id: "example-h", label: "One possession" },
+  { id: "distance-h", label: "What the provider's distance measures" },
+  { id: "matches-h", label: "From one possession to ten matches" },
+  { id: "matters-h", label: "Why it matters" },
+  { id: "limitations-h", label: "Limitations" },
+  { id: "try-h", label: "Try it yourself" },
+  { id: "reproduce-h", label: "Reproduce it" },
+  { id: "reading-h", label: "Further reading" },
+];
+
 export function Lesson({ sql }: { sql: string }) {
   return (
     <main id="main" className="page lesson learn-pass">
@@ -76,6 +91,7 @@ export function Lesson({ sql }: { sql: string }) {
           {l("dist_hi")}.
         </p>
       </LessonHead>
+      <Chapters items={CHAPTERS} />
       <Band>
         <section aria-labelledby="question-h">
           <h2 id="question-h">The question</h2>

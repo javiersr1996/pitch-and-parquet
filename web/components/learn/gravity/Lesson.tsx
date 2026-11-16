@@ -6,6 +6,7 @@ import { hypothesesFigures, type HypothesesFigures } from "../../../lib/learn/hy
 import { lessonFigures, type LessonFigures } from "../../../lib/learn/lesson-figures";
 import { QUALITY } from "../../../lib/quality";
 import { Band } from "../../site/Band";
+import { type Chapter, Chapters } from "../../site/Chapters";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
@@ -63,6 +64,21 @@ const sumU = (k: number) =>
     </mrow>
   );
 
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "question-h", label: "The question" },
+  { id: "concept-h", label: "A parabola by least squares" },
+  { id: "example-h", label: "One shot" },
+  { id: "matches-h", label: "From one shot to every match" },
+  { id: "not-h", label: "What does not explain it" },
+  { id: "data-h", label: "What the data add" },
+  { id: "matters-h", label: "Why it matters" },
+  { id: "limitations-h", label: "Limitations" },
+  { id: "try-h", label: "Try it yourself" },
+  { id: "reproduce-h", label: "Reproduce it" },
+  { id: "reading-h", label: "Further reading" },
+];
+
 export function Lesson({ sql }: { sql: string }) {
   return (
     <main id="main" className="page lesson">
@@ -81,6 +97,7 @@ export function Lesson({ sql }: { sql: string }) {
           the Earth were lighter.
         </p>
       </LessonHead>
+      <Chapters items={CHAPTERS} />
       <Band>
         <section aria-labelledby="question-h">
           <h2 id="question-h">The question</h2>

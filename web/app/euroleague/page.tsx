@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Atlas } from "../../components/euroleague/Atlas";
 import { LeaguePanel } from "../../components/euroleague/LeaguePanel";
 import { Band, PageHead } from "../../components/site/Band";
+import { type Chapter, Chapters } from "../../components/site/Chapters";
 import { LEAGUE, RUNS, teamsSummary } from "../../lib/euroleague/data";
 import { EUROLEAGUE, SECTIONS, TAKEDOWN_CONTACT } from "../../lib/sections";
 import "./euroleague.css";
@@ -18,6 +19,13 @@ export const metadata: Metadata = {
 // /euroleague (P14, task 116): the shot atlas. Every figure comes from web/public/data/euroleague/,
 // the aggregates `tracklab euroleague publish` writes: league.json at build time, a team's file
 // when it is chosen. No request leaves for euroleague.net.
+// The chapters strip (P32): the page's h2s, in order (the first two drawn by the atlas).
+const CHAPTERS: readonly Chapter[] = [
+  { id: "el-changes-title", label: "What has changed" },
+  { id: "el-streaks-title", label: "Runs and comebacks" },
+  { id: "el-source-title", label: "The data" },
+];
+
 export default function EuroleaguePage() {
   const summary = teamsSummary();
   const k = LEAGUE.hex.k;
@@ -34,6 +42,7 @@ export default function EuroleaguePage() {
           of its players, in the season just finished or the one under way.
         </p>
       </PageHead>
+      <Chapters items={CHAPTERS} />
       <Atlas league={LEAGUE} runs={RUNS} {...summary} />
       <Band dark className="el-attribution">
         <section aria-labelledby="el-source-title">

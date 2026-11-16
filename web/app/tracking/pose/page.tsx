@@ -3,6 +3,7 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { Pose } from "../../../components/pose/Pose";
 import { Band, PageHead } from "../../../components/site/Band";
+import { type Chapter, Chapters } from "../../../components/site/Chapters";
 import { formatBytes } from "../../../lib/format";
 import type { PoseClip, PoseSummary } from "../../../lib/pose/types";
 
@@ -275,7 +276,7 @@ function Concordance({ doc }: { doc: PoseSummary }) {
   const nan = col(doc, "m3_nan_h_share");
   return (
     <section data-section="m3">
-      <h2>Where the second signal disagrees</h2>
+      <h2 id="pose-m3">Where the second signal disagrees</h2>
       <p>
         This check compares the cadence of the ankles&apos; signal along the run with that of their
         vertical separation, in the fast band. It is a consistency check, not a verdict, and it carries no
@@ -337,7 +338,7 @@ function Concordance({ doc }: { doc: PoseSummary }) {
 function Protocol({ doc }: { doc: PoseSummary }) {
   return (
     <section data-section="protocol">
-      <h2>The protocol, in the order it was written</h2>
+      <h2 id="pose-protocol">The protocol, in the order it was written</h2>
       <p>
         Match <S doc={doc} p="protocol.calibration" /> calibrates and match{" "}
         <S doc={doc} p="protocol.confirmation" /> confirms.{" "}
@@ -388,6 +389,24 @@ function View({
   onClip: (file: string) => void;
 }) {
   const mae = "coverage.p90_mae_cm";
+  // The chapters strip (P32): the h2s this view draws, in order; the clip's two only once it is loaded.
+  const chapters: Chapter[] = [
+    { id: "pose-limits", label: "What the data does not say" },
+    ...(clip
+      ? [
+          { id: "pose-clip", label: "The clip on show" },
+          { id: "pose-error", label: "The predicted error travels with each joint" },
+        ]
+      : []),
+    { id: "pose-coverage", label: "How much of each match has a pose" },
+    ...(doc.tables === null
+      ? [{ id: "pose-no-tables", label: "No table is published" }]
+      : [
+          { id: "pose-tables", label: "Cadence and step, per match and per player" },
+          { id: "pose-m3", label: "Where the second signal disagrees" },
+        ]),
+    { id: "pose-protocol", label: "The protocol, in the order it was written" },
+  ];
   return (
     <>
       <PageHead eyebrow="Body pose">
@@ -395,6 +414,7 @@ function View({
         {LEDE}
         <Status doc={doc} />
       </PageHead>
+      <Chapters items={chapters} />
       <Band dark>
         <div className="pose-layout">
           <div className="pose-stage">
@@ -426,7 +446,7 @@ function View({
             )}
           </div>
           <aside className="pose-limits" data-section="limits">
-            <h2>What the data does not say</h2>
+            <h2 id="pose-limits">What the data does not say</h2>
             {doc.limits.map((limit, j) => (
               <div key={limit.id} data-limit={limit.id}>
                 <blockquote data-fig={`limits.${j}.text`}>{limit.text}</blockquote>
@@ -443,7 +463,7 @@ function View({
         {clip ? (
           <>
             <section data-section="clip">
-              <h2>The clip on show</h2>
+              <h2 id="pose-clip">The clip on show</h2>
               <p>
                 Match <C clip={clip} p="match_id" />, period <C clip={clip} p="period" />, frames{" "}
                 <C clip={clip} p="frame_lo" /> to <C clip={clip} p="frame_hi" /> at <C clip={clip} p="fps" /> fps.
@@ -467,7 +487,7 @@ function View({
               </p>
             </section>
             <section data-section="error">
-              <h2>The predicted error travels with each joint</h2>
+              <h2 id="pose-error">The predicted error travels with each joint</h2>
               <p>
                 Every joint comes with SkillCorner&apos;s predicted error, <code>p90_mae_cm</code>. The viewer
                 draws a joint and its bones solid up to the clip&apos;s median,{" "}
@@ -479,7 +499,7 @@ function View({
           </>
         ) : null}
         <section data-section="coverage">
-          <h2>How much of each match has a pose</h2>
+          <h2 id="pose-coverage">How much of each match has a pose</h2>
           <p>
             Pose exists only where the provider resolved a player: in{" "}
             <S doc={doc} p={`coverage.${doc.protocol.calibration}.total.share_player_frames_with_pose`} /> of the
@@ -491,12 +511,12 @@ function View({
         </section>
         {doc.tables === null ? (
           <section data-section="no-tables">
-            <h2>No table is published</h2>
+            <h2 id="pose-no-tables">No table is published</h2>
             <p>A project that died is published without per-player tables.</p>
           </section>
         ) : (
           <section data-section="tables">
-            <h2>Cadence and step, per match and per player</h2>
+            <h2 id="pose-tables">Cadence and step, per match and per player</h2>
             <p>
               Each value is the median over that player&apos;s windows with a cadence, with the sd propagated
               from the joints&apos; predicted error beside it, and the number of windows it comes from in the

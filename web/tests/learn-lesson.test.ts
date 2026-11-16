@@ -113,9 +113,10 @@ describe("the text of lesson 1", () => {
   });
 
   // P8 set 1,800 to 2,300; P9 adds "What the data add" (task 87) and the line before "Run it here"
-  // (task 86), about three hundred words.
-  it("is between 1,800 and 2,600 words: its figures counted, its formulas, query and figure panels not", () => {
-    const words = text(drop(HTML, ["figure", "pre", "math"])).split(" ").filter((w) => /[A-Za-z0-9]/.test(w)).length;
+  // (task 86), about three hundred words. The chapters strip (P32) repeats the headings: navigation,
+  // not the lesson's words, so it is not counted.
+  it("is between 1,800 and 2,600 words: its figures counted, its formulas, query, figure panels and chapters not", () => {
+    const words = text(drop(HTML, ["figure", "pre", "math", "nav"])).split(" ").filter((w) => /[A-Za-z0-9]/.test(w)).length;
     console.log(`lesson 1: ${words} words`);
     expect(words).toBeGreaterThanOrEqual(1800);
     expect(words).toBeLessThanOrEqual(2600);
