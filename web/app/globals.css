@@ -4397,6 +4397,7 @@ figure.run-here {
 }
 
 .fold > summary::after {
+  content: "+";
   content: "+" / "";
   flex: none;
   font-size: var(--step-3);
@@ -4404,6 +4405,7 @@ figure.run-here {
 }
 
 .fold[open] > summary::after {
+  content: "\2212";
   content: "\2212" / "";
 }
 

@@ -16,9 +16,6 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: SECTION.title, description: SECTION.about },
 };
 
-// /euroleague (P14, task 116): the shot atlas. Every figure comes from web/public/data/euroleague/,
-// the aggregates `tracklab euroleague publish` writes: league.json at build time, a team's file
-// when it is chosen. No request leaves for euroleague.net.
 // The chapters strip (P32): the page's h2s, in order (the first two drawn by the atlas).
 const CHAPTERS: readonly Chapter[] = [
   { id: "el-changes-title", label: "What has changed" },
@@ -26,6 +23,9 @@ const CHAPTERS: readonly Chapter[] = [
   { id: "el-source-title", label: "The data" },
 ];
 
+// /euroleague (P14, task 116): the shot atlas. Every figure comes from web/public/data/euroleague/,
+// the aggregates `tracklab euroleague publish` writes: league.json at build time, a team's file
+// when it is chosen. No request leaves for euroleague.net.
 export default function EuroleaguePage() {
   const summary = teamsSummary();
   const k = LEAGUE.hex.k;

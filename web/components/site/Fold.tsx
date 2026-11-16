@@ -18,12 +18,10 @@ function hashId(): string {
 export function Fold({
   heading,
   summary,
-  className,
   children,
 }: {
   heading?: string;
   summary: ReactNode;
-  className?: string;
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDetailsElement>(null);
@@ -57,7 +55,7 @@ export function Fold({
     };
   }, [heading]);
   return (
-    <details ref={ref} className={["fold", className].filter(Boolean).join(" ")} data-fold={heading}>
+    <details ref={ref} className="fold" data-fold={heading}>
       <summary>{summary}</summary>
       <div className="fold-body">{children}</div>
     </details>

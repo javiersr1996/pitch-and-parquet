@@ -51,6 +51,10 @@ test("runs and comebacks: three tabs, the runs first, driven by the arrow keys",
   expect(await page.locator('[data-ranking="comebacks"] > li').count()).toBeGreaterThan(0);
   expect(await page.locator("[data-streak-team]").count()).toBeGreaterThan(0);
   await arrows(page, tabs, ["runs", "comebacks", "teams"]);
+  // With a modifier held the key is the browser's, not the tabs'.
+  await page.keyboard.press("Control+ArrowRight");
+  await page.keyboard.press("Meta+End");
+  expect(await shown(tabs)).toEqual(["runs"]);
   // A click selects too.
   await tabs.getByRole("tab", { name: "By team" }).click();
   await expect(page.locator("[data-streak-team]").first()).toBeVisible();
