@@ -1,6 +1,15 @@
 # Pitch & Parquet
 
+[![ci](https://github.com/javiersr1996/pitch-and-parquet/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/javiersr1996/pitch-and-parquet/actions/workflows/ci.yml)
+
 **Live: https://pitchandparquet.vercel.app**
+
+Watch a possession, then ask it a question, all in your browser:
+
+- [Replay](https://pitchandparquet.vercel.app/tracking/replay): football and basketball tracking data, drawn frame by frame.
+- [Learn](https://pitchandparquet.vercel.app/learn): lessons that each start from one question and end with a query you can run.
+- [SQL](https://pitchandparquet.vercel.app/sql): a course on the season statistics, with exercises checked in the browser.
+- [How it was built](https://pitchandparquet.vercel.app/engineering): the pipeline from raw files to the site, with what the latest build measured.
 
 > **Personal learning project** by Javier Sánchez Rueda
 > ([LinkedIn](https://www.linkedin.com/in/javier-sanchez-rueda/)). Pitch & Parquet is non-commercial and
@@ -9,10 +18,6 @@
 > SkillCorner's open data is used under its MIT license, and the figures may contain errors and are
 > not an assessment of any player or team. The full disclaimer is at
 > [/about](https://pitchandparquet.vercel.app/about).
-
-Watch a possession, then ask it a question: replay football and basketball tracking data, follow
-lessons that each start from one question, and run SQL on the season statistics, all in your
-browser.
 
 One schema, two sports, one renderer. Pitch & Parquet takes SkillCorner's open tracking and event data
 for basketball and football, verifies every provider file against a pinned manifest, conforms

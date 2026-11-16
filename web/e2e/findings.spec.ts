@@ -7,7 +7,11 @@ import { expect, type Page, test } from "@playwright/test";
 const json = async <T,>(page: Page, path: string) => (await (await page.request.get(path)).json()) as T;
 
 test("the two findings print their files' figures and open the pages that make the claims", async ({ page }) => {
-  const quality = await json<{ hook: { g_data: number; g_real: number } }>(page, "/data/quality.json");
+  type Row = { sport: string; match_id: string; metric: string; value: number };
+  const quality = await json<{ hook: { g_real: number }; checks: { gravity: Row[] } }>(page, "/data/quality.json");
+  const basketball = quality.checks.gravity.filter((r) => r.sport === "basketball");
+  const medians = basketball.filter((r) => r.metric === "g_median").map((r) => r.value);
+  const flights = basketball.filter((r) => r.metric === "flights").reduce((n, r) => n + r.value, 0);
   const platform = await json<{ title: string; subtitle: string; layers: unknown[] }>(page, "/data/platform.json");
 
   await page.goto("/");
@@ -18,7 +22,11 @@ test("the two findings print their files' figures and open the pages that make t
   ]);
   const fig = (card: string, name: string) => page.locator(`[data-finding="${card}"] [data-fig="${name}"]`);
 
-  await expect(fig("gravity", "g_data")).toHaveText(String(quality.hook.g_data));
+  // The gravity card counts matches (P34): every match's median against standard gravity, over all
+  // of their flights, recounted here from the file's rows.
+  await expect(fig("gravity", "medians_below")).toHaveText(String(medians.filter((g) => g < quality.hook.g_real).length));
+  await expect(fig("gravity", "sign_n")).toHaveText(String(medians.filter((g) => g !== quality.hook.g_real).length));
+  await expect(fig("gravity", "flights")).toHaveText(String(flights));
   await expect(fig("gravity", "g_real")).toHaveText(String(quality.hook.g_real));
 
   await expect(fig("bytes", "title")).toHaveText(platform.title);
@@ -27,11 +35,12 @@ test("the two findings print their files' figures and open the pages that make t
 
   // Each claim is its page's own words.
   const claims: [string, string, string[]][] = [
-    ["gravity", "/learn/gravity", ["The ball falls as if the Earth were lighter."]],
+    ["gravity", "/learn/gravity", ["Most flights in every match curve less than gravity says they should."]],
     ["bytes", "/engineering", [`One pipeline run, ${platform.layers.length} layers`]],
   ];
   for (const [card, href, words] of claims) {
     await expect(page.locator(`[data-finding="${card}"] h3 a`)).toHaveAttribute("href", href);
+    await expect(page.locator(`[data-finding="${card}"] h3`)).toHaveText(words[0].replace(/\.$/, ""));
     const html = (await (await page.request.get(href)).text()).replace(/<!-- -->/g, "").replace(/\s+/g, " ");
     for (const w of words) expect(html, `${href} says "${w}"`).toContain(w);
   }

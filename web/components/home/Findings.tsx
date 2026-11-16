@@ -1,12 +1,16 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { GRAVITY_HOOK } from "../../lib/learn/gravity-data";
+import { GRAVITY_HOOK, GRAVITY_MATCHES } from "../../lib/learn/gravity-data";
+import { lessonFigures } from "../../lib/learn/lesson-figures";
 import { PLATFORM } from "../../lib/platform";
 
 // What the site found (P20, task 175): one claim per card, its figure large, in the words of the
 // page the card opens, never stronger. Every figure is read here at build time through the loaders
-// those pages use (quality.json's hook, platform.json); none is typed.
+// those pages use (quality.json's gravity rows, platform.json); none is typed.
 // `data-finding` names the card for the e2e, which compare each figure with its file.
+// The gravity card counts matches, not one shot (P34): a single flight read as a claim about physics.
+const GRAVITY = lessonFigures(GRAVITY_HOOK, GRAVITY_MATCHES);
+const FLIGHTS = GRAVITY_MATCHES.reduce((n, m) => n + m.flights, 0);
 
 interface Finding {
   key: string;
@@ -24,17 +28,21 @@ function findings(): Finding[] {
       href: "/learn/gravity",
       value: (
         <>
-          <span data-fig="g_data">{GRAVITY_HOOK.g_data}</span>
-          <span className="finding-unit">m/s²</span>
+          <span data-fig="medians_below">{GRAVITY.medians_below}</span> of <span data-fig="sign_n">{GRAVITY.sign_n}</span>
         </>
       ),
       vs: (
         <>
-          standard gravity <span data-fig="g_real">{GRAVITY_HOOK.g_real}</span> m/s²
+          matches whose median g is below standard gravity, <span data-fig="g_real">{GRAVITY_HOOK.g_real}</span> m/s²
         </>
       ),
-      title: "The ball falls as if the Earth were lighter",
-      about: "The g of the lesson's shot: a parabola fitted to a basketball's height in flight, in SkillCorner's open basketball tracking.",
+      title: "Most flights in every match curve less than gravity says they should",
+      about: (
+        <>
+          The median g of <span data-fig="flights">{FLIGHTS}</span> tracked flights, match by match, in SkillCorner&apos;s
+          open basketball tracking. The lesson rules out noise and the fit window, and leaves the cause open.
+        </>
+      ),
     },
     {
       key: "bytes",
