@@ -121,6 +121,24 @@ test("a chapter's chip tapped before hydration opens its fold, on a CPU six time
   await expect(page).toHaveURL(/#reading-h$/);
 });
 
+test("two beforeprint before one afterprint (Safari) leave the folds as they were", async ({ page }) => {
+  await page.goto("/learn/entry");
+  await hydrated(page);
+  await openFold(page, "limitations-h");
+  await page.evaluate(() => {
+    window.dispatchEvent(new Event("beforeprint"));
+    window.dispatchEvent(new Event("beforeprint"));
+  });
+  for (const id of FOLDS) await expect(page.locator(`details[data-fold="${id}"]`)).toHaveAttribute("open", "");
+  await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
+  await expect(page.locator('details[data-fold="limitations-h"]')).toHaveAttribute("open", "");
+  await expect(page.locator('details[data-fold="reproduce-h"]')).not.toHaveAttribute("open");
+  await expect(page.locator('details[data-fold="reading-h"]')).not.toHaveAttribute("open");
+  // A stray afterprint after that changes nothing either.
+  await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
+  await expect(page.locator('details[data-fold="limitations-h"]')).toHaveAttribute("open", "");
+});
+
 test("a fold opens and closes from the keyboard", async ({ page }) => {
   await page.goto("/learn/dribble");
   const summary = page.locator('details[data-fold="limitations-h"] > summary');
