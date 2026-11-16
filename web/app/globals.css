@@ -4734,3 +4734,12 @@ html:has([data-chapters]) {
     color: var(--fg-strong);
   }
 }
+
+/* With the rail (P32b, task 215) the strip takes no height, and the hairline that splits two bands
+   of one tone, which the strip stood between, is drawn again. */
+@media (min-width: 118rem) {
+  .band:not(.surface-dark) + .chapters + .band:not(.surface-dark),
+  .band.surface-dark + .chapters + .band.surface-dark {
+    border-top: 1px solid var(--rule);
+  }
+}

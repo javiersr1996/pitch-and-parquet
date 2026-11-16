@@ -206,6 +206,23 @@ test("on a tall screen the last chapter is current at the foot of the page, and 
   }
 });
 
+// P32b, task 215: with the rail the strip takes no height, and the hairline it stood on goes to the
+// band below, so a lesson keeps one line between its head and its first band at every width.
+test("one hairline under a lesson's head, from the strip or, with the rail, from the band", async ({ page }) => {
+  for (const [width, height] of [
+    [1440, 900],
+    [1920, 1080],
+  ]) {
+    await page.setViewportSize({ width, height });
+    await open(page, "/learn/clock");
+    const line = await page.locator(".chapters").evaluate((nav) => ({
+      strip: getComputedStyle(nav).borderBottomWidth,
+      band: getComputedStyle(nav.nextElementSibling!).borderTopWidth,
+    }));
+    expect(line, `at ${width}`).toEqual(width >= 1888 ? { strip: "0px", band: "1px" } : { strip: "1px", band: "0px" });
+  }
+});
+
 // P32b, task 215: from 640 px a mouse with no sideways wheel scrolls the strip by its step buttons.
 test.describe("the strip's step buttons", () => {
   test.use({ viewport: { width: 1024, height: 768 } });
