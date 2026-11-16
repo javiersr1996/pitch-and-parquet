@@ -177,9 +177,16 @@ test("on a tall screen the last chapter is current at the foot of the page, and 
     const top = await page.locator("#reading-h").evaluate((h) => h.getBoundingClientRect().top);
     expect(top, `at ${width}`).toBeGreaterThan(height / 3);
     await expect(current(page)).toHaveText("Further reading");
-    // A little way up from the foot, the headings' places decide again.
+    // A little way up from the foot, the headings' places decide again: the last one above the top
+    // third, which is not the last chapter.
     await page.evaluate(() => window.scrollBy(0, -200));
-    await expect(current(page)).toHaveText("Reproduce it");
+    const above = await page.locator(".chapters a").evaluateAll((as) =>
+      as
+        .filter((a) => document.getElementById(a.getAttribute("href")!.slice(1))!.getBoundingClientRect().top <= innerHeight * 0.33)
+        .map((a) => a.textContent),
+    );
+    expect(above.at(-1), `at ${width}`).not.toBe("Further reading");
+    await expect(current(page)).toHaveText(above.at(-1)!);
   }
 });
 
