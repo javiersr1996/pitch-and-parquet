@@ -51,6 +51,13 @@ export function Chapters({ items }: { items: readonly Chapter[] }) {
     return () => io.disconnect();
   }, [items]);
 
+  // A link followed before hydration: the router has written back the address it started with, so
+  // the hash goes back for the heading the browser went to, which is still `:target`.
+  useEffect(() => {
+    const target = document.querySelector(":target");
+    if (!location.hash && target && items.some((c) => c.id === target.id)) history.replaceState(null, "", `#${target.id}`);
+  }, [items]);
+
   // The progress bar follows the scroll, once a frame, written straight to its style; the same frame
   // says whether the page is at its foot.
   useEffect(() => {

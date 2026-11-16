@@ -90,6 +90,32 @@ test("printing opens every fold and closes again the ones that were closed", asy
   await expect(page.locator('details[data-fold="reading-h"]')).not.toHaveAttribute("open");
 });
 
+// P32b, task 215: a chip tapped before React has hydrated is a plain link; the router then writes
+// back the address it started with. The fold still opens, and the address gets its hash back.
+test("a chapter's chip tapped before hydration opens its fold, on a CPU six times slower", async ({ page }) => {
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send("Emulation.setCPUThrottlingRate", { rate: 6 });
+  // The scripts are held back until the tap, as on a slow network, so the tap lands on the server's
+  // HTML: on a busy CPU alone a click waits for the main thread, which is hydrating.
+  let release = () => {};
+  const held = new Promise<void>((resolve) => (release = resolve));
+  await page.route((url) => url.pathname.startsWith("/_next/static/") && url.pathname.endsWith(".js"), async (route) => {
+    await held;
+    await route.continue();
+  });
+  const bar = page.locator(".chapters-progress > span[style]");
+  await page.goto("/learn/pass", { waitUntil: "domcontentloaded" });
+  await page.locator('.chapters a[href="#reading-h"]').click();
+  // The tap came before hydration, or this test would not be testing it.
+  expect(await bar.count()).toBe(0);
+  await expect(page).toHaveURL(/#reading-h$/);
+  release();
+  await expect(bar).toBeAttached({ timeout: 30_000 });
+  await expect(page.locator('details[data-fold="reading-h"]')).toHaveAttribute("open", "");
+  await expect(page.locator('details[data-fold="reproduce-h"]')).not.toHaveAttribute("open");
+  await expect(page).toHaveURL(/#reading-h$/);
+});
+
 test("a fold opens and closes from the keyboard", async ({ page }) => {
   await page.goto("/learn/dribble");
   const summary = page.locator('details[data-fold="limitations-h"] > summary');
