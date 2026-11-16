@@ -52,10 +52,13 @@ export function Chapters({ items }: { items: readonly Chapter[] }) {
   }, [items]);
 
   // A link followed before hydration: the router has written back the address it started with, so
-  // the hash goes back for the heading the browser went to, which is still `:target`.
+  // the hash goes back for the heading the browser went to, which is still `:target`, and a
+  // `hashchange` tells a fold that has already read the address to read it again.
   useEffect(() => {
     const target = document.querySelector(":target");
-    if (!location.hash && target && items.some((c) => c.id === target.id)) history.replaceState(null, "", `#${target.id}`);
+    if (location.hash || !target || !items.some((c) => c.id === target.id)) return;
+    history.replaceState(null, "", `#${target.id}`);
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
   }, [items]);
 
   // The progress bar follows the scroll, once a frame, written straight to its style; the same frame
