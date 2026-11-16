@@ -35,14 +35,21 @@ test("the two findings print their files' figures and open the pages that make t
 
   // Each claim is its page's own words.
   const claims: [string, string, string[]][] = [
-    ["gravity", "/learn/gravity", ["Most flights in every match curve less than gravity says they should."]],
+    [
+      "gravity",
+      "/learn/gravity",
+      ["Most flights in every match curve less than gravity says they should.", "rules some causes out and leaves the rest open."],
+    ],
     ["bytes", "/engineering", [`One pipeline run, ${platform.layers.length} layers`]],
   ];
   for (const [card, href, words] of claims) {
     await expect(page.locator(`[data-finding="${card}"] h3 a`)).toHaveAttribute("href", href);
     await expect(page.locator(`[data-finding="${card}"] h3`)).toHaveText(words[0].replace(/\.$/, ""));
     const html = (await (await page.request.get(href)).text()).replace(/<!-- -->/g, "").replace(/\s+/g, " ");
-    for (const w of words) expect(html, `${href} says "${w}"`).toContain(w);
+    for (const w of words) {
+      expect(html, `${href} says "${w}"`).toContain(w);
+      await expect(page.locator(`[data-finding="${card}"]`)).toContainText(w.replace(/\.$/, ""));
+    }
   }
   // The whole card opens its page.
   await page.locator('[data-finding="gravity"]').scrollIntoViewIfNeeded();

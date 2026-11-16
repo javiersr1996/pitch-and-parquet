@@ -39,8 +39,8 @@ function findings(): Finding[] {
       title: "Most flights in every match curve less than gravity says they should",
       about: (
         <>
-          The median g of <span data-fig="flights">{FLIGHTS}</span> tracked flights, match by match, in SkillCorner&apos;s
-          open basketball tracking. The lesson rules out noise and the fit window, and leaves the cause open.
+          The median g of <span data-fig="flights">{FLIGHTS}</span> accepted flights, match by match, in SkillCorner&apos;s
+          open basketball tracking. The lesson rules some causes out and leaves the rest open.
         </>
       ),
     },

@@ -1336,15 +1336,6 @@ body:has(.home) .site-header::after {
   overflow-wrap: anywhere;
 }
 
-.finding-unit {
-  margin-left: 0.3em;
-  font-size: max(1rem, 0.45em);
-  font-weight: 600;
-  letter-spacing: 0;
-  color: var(--fg-muted);
-  text-shadow: none;
-}
-
 .finding-vs,
 .finding-tag {
   font-family: var(--font-neon);
