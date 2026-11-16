@@ -116,6 +116,14 @@ export function Chapters({ items }: { items: readonly Chapter[] }) {
     if (fold) fold.open = true;
   };
 
+  // The strip a step along, for a mouse with no sideways wheel (P32b): most of its width at a time.
+  const step = (dir: -1 | 1) => {
+    const ol = list.current;
+    if (!ol) return;
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    ol.scrollBy({ left: dir * ol.clientWidth * 0.8, behavior: still ? "auto" : "smooth" });
+  };
+
   return (
     <nav className="chapters" aria-label="On this page" data-chapters>
       <div className="wrap chapters-row">
@@ -128,6 +136,13 @@ export function Chapters({ items }: { items: readonly Chapter[] }) {
             </li>
           ))}
         </ol>
+        {/* For the mouse only: the keyboard tabs along the links, and the strip follows the focus. */}
+        <button type="button" className="chapters-step" data-step="back" tabIndex={-1} aria-hidden="true" onClick={() => step(-1)}>
+          ‹
+        </button>
+        <button type="button" className="chapters-step" data-step="next" tabIndex={-1} aria-hidden="true" onClick={() => step(1)}>
+          ›
+        </button>
         <span className="chapters-progress" aria-hidden="true">
           <span ref={bar} />
         </span>

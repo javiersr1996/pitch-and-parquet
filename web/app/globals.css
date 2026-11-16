@@ -4688,3 +4688,49 @@ html:has([data-chapters]) {
     scroll-snap-align: start;
   }
 }
+
+/* The chapters strip for a mouse with no sideways wheel (P32b, task 215): from 640 px, where the
+   pointer hovers, a step button over each faded edge that has more chapters past it, scrolling the
+   strip most of its width. A phone swipes; the keyboard tabs along the links. */
+.chapters-step {
+  display: none;
+}
+
+@media (40rem <= width < 118rem) and (hover: hover) and (pointer: fine) {
+  .chapters-step {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    align-items: center;
+    width: var(--space-7);
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    font-size: var(--step-3);
+    line-height: 1;
+    letter-spacing: 0;
+    color: var(--neon);
+  }
+
+  .chapters-step[data-step="back"] {
+    left: var(--gutter);
+    justify-content: flex-start;
+    background: linear-gradient(to right, var(--neon-bg) 60%, transparent);
+  }
+
+  .chapters-step[data-step="next"] {
+    right: var(--gutter);
+    justify-content: flex-end;
+    background: linear-gradient(to left, var(--neon-bg) 60%, transparent);
+  }
+
+  .chapters ol[data-start="false"] ~ .chapters-step[data-step="back"],
+  .chapters ol[data-end="false"] ~ .chapters-step[data-step="next"] {
+    display: flex;
+  }
+
+  .chapters-step:hover:not(:disabled) {
+    color: var(--fg-strong);
+  }
+}
