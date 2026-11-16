@@ -1,5 +1,6 @@
 import { expect, type Page, test } from "@playwright/test";
 import { LESSONS, lessonHref } from "../lib/learn/series";
+import { hydrated } from "./fold";
 
 // P32, task 210: the chapters strip. Its links are the page's h2s, passed by the page and checked
 // here against what it draws; the current one follows the scroll; a link lands its heading clear of
@@ -18,6 +19,7 @@ async function open(page: Page, route: string) {
   await page.goto(route);
   // /tracking/pose draws its chapters once pose.json is in.
   await expect(page.locator(".chapters a").first()).toBeAttached();
+  await hydrated(page);
 }
 
 test("the strip's links are the page's h2s, in order, each with its heading's text", async ({ page }) => {

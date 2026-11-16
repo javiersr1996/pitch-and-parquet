@@ -8,3 +8,10 @@ export async function openFold(page: Page, heading: string) {
   if (!(await fold.evaluate((d) => (d as HTMLDetailsElement).open))) await fold.locator(":scope > summary").click();
   await expect(fold).toHaveAttribute("open", "");
 }
+
+// Hydrated: the chapters strip has drawn its progress bar, which only its effect does. Before that a
+// tab or a strip's link has no handler, and an address changed then is lost: the router writes the
+// address it started with back when it hydrates (seen on a CPU six times slower).
+export async function hydrated(page: Page) {
+  await expect(page.locator(".chapters-progress > span[style]")).toBeAttached();
+}

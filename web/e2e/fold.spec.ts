@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { LESSONS, lessonHref } from "../lib/learn/series";
-import { openFold } from "./fold";
+import { hydrated, openFold } from "./fold";
 
 // P32, task 209: a lesson's reference material (Limitations, Reproduce it, Further reading) folded
 // under its heading. Closed on load with every word still in the HTML, its summary saying what is
@@ -68,6 +68,7 @@ test("an address inside a fold opens it and brings the target into view", async 
 
 test("a hashchange opens the fold it points at", async ({ page }) => {
   await page.goto("/learn/pass");
+  await hydrated(page);
   const fold = page.locator('details[data-fold="reading-h"]');
   await expect(fold).not.toHaveAttribute("open");
   await page.evaluate(() => {
@@ -79,6 +80,7 @@ test("a hashchange opens the fold it points at", async ({ page }) => {
 
 test("printing opens every fold and closes again the ones that were closed", async ({ page }) => {
   await page.goto("/learn/entry");
+  await hydrated(page);
   await openFold(page, "limitations-h");
   await page.evaluate(() => window.dispatchEvent(new Event("beforeprint")));
   for (const id of FOLDS) await expect(page.locator(`details[data-fold="${id}"]`)).toHaveAttribute("open", "");

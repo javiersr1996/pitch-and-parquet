@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
+import { hydrated } from "./fold";
 
 // P32, task 211: the long repeated lists outside the lessons. Tabs on /euroleague (runs, comebacks,
 // by team) and on /tracking/pose (one match at a time, twice), each opening on what came first
@@ -39,6 +40,7 @@ async function arrows(page: Page, tabs: Locator, keys: string[]) {
 
 test("runs and comebacks: three tabs, the runs first, driven by the arrow keys", async ({ page }) => {
   await page.goto("/euroleague");
+  await hydrated(page);
   const tabs = page.locator(".el-streak-tabs");
   await expect(tabs.getByRole("tablist", { name: "Runs and comebacks" })).toBeVisible();
   await expect(tabs.getByRole("tab")).toHaveText(["Runs", "Comebacks", "By team"]);
@@ -59,6 +61,7 @@ test("pose: one match at a time in both tables, the first match first, driven by
   test.skip(summary.tables === null, "a pose that died publishes no table");
   const matches = Object.keys(summary.tables!.matches);
   await page.goto("/tracking/pose");
+  await hydrated(page);
   for (const [section, table] of [
     ["tables", "players"],
     ["m3", "m3"],
@@ -77,6 +80,7 @@ test("pose: one match at a time in both tables, the first match first, driven by
 test("/engineering folds its two reference tables, each summary counting its rows", async ({ page }) => {
   const platform = (await (await page.request.get("/data/platform.json")).json()) as { matches: unknown[] };
   await page.goto("/engineering");
+  await hydrated(page);
   const matches = page.locator('details[data-fold="matches"]');
   const silver = page.locator('details[data-fold="silver-models"]');
   for (const fold of [matches, silver]) {
