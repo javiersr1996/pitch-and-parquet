@@ -3,9 +3,11 @@ import type { ReactNode } from "react";
 import { REBOUND, reboundFig, reboundFigure } from "../../../lib/learn/rebound-data";
 import { raceAt, reboundFigures, type ReboundFigures } from "../../../lib/learn/rebound-figures";
 import { Band } from "../../site/Band";
+import { type Chapter, Chapters } from "../../site/Chapters";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -73,6 +75,19 @@ const norm = (inner: ReactNode) => (
   </>
 );
 
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "question-h", label: "The question" },
+  { id: "concept-h", label: "Time to arrive" },
+  { id: "example-h", label: "One rebound" },
+  { id: "matches-h", label: "From one rebound to ten matches" },
+  { id: "matters-h", label: "Why it matters" },
+  { id: "limitations-h", label: "Limitations" },
+  { id: "try-h", label: "Try it yourself" },
+  { id: "reproduce-h", label: "Reproduce it" },
+  { id: "reading-h", label: "Further reading" },
+];
+
 export function Lesson({ sql }: { sql: string }) {
   return (
     <main id="main" className="page lesson learn-rebound">
@@ -92,6 +107,7 @@ export function Lesson({ sql }: { sql: string }) {
           to that place, with no model at all, is the rebounder in {l("near_lo")} to {l("near_hi")}&nbsp;%.
         </p>
       </LessonHead>
+      <Chapters items={CHAPTERS} />
       <Band>
         <section aria-labelledby="question-h">
           <h2 id="question-h">The question</h2>
@@ -413,25 +429,22 @@ export function Lesson({ sql }: { sql: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="spearman-2018" full />: the time to arrive, its logistic spread and the model of control built on them.
-            </li>
-            <li>
-              <Cite id="shaw-tti" full />: a short, readable implementation of the same model, with every parameter in one
-              place.
-            </li>
-            <li>
-              <Cite id="skillcorner-rebound-location" full />: the provider&apos;s definitions of every field of a rebound.
-            </li>
-            <li>
-              <a href="/learn/speed">Where does the provider&apos;s speed come from?</a>, the second lesson, for the central
-              difference that gives every velocity here.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="spearman-2018" full />: the time to arrive, its logistic spread and the model of control built on them.
+          </li>
+          <li>
+            <Cite id="shaw-tti" full />: a short, readable implementation of the same model, with every parameter in one
+            place.
+          </li>
+          <li>
+            <Cite id="skillcorner-rebound-location" full />: the provider&apos;s definitions of every field of a rebound.
+          </li>
+          <li>
+            <a href="/learn/speed">Where does the provider&apos;s speed come from?</a>, the second lesson, for the central
+            difference that gives every velocity here.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures file={REBOUND} />
     </main>

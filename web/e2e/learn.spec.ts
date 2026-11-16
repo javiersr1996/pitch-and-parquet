@@ -169,6 +169,14 @@ for (const width of WIDTHS) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(path);
       await page.waitForLoadState("networkidle");
+      // A lesson's folds (P32) open first: closed, the query and Run it here have no box to measure.
+      const folds = await page.evaluate(() => {
+        const all = [...document.querySelectorAll<HTMLDetailsElement>("details.fold")];
+        all.forEach((d) => (d.open = true));
+        return all.length;
+      });
+      expect(folds).toBe(path === "/learn/gravity" ? 3 : 0);
+      if (folds > 0) await expect(page.locator("figure.run-here")).toBeVisible();
 
       const sideways = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       expect(sideways, "page wider than the window by").toBeLessThanOrEqual(0);

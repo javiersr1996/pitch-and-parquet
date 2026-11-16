@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatBytes, pluralize } from "../lib/format";
+import { countWord, formatBytes, pluralize } from "../lib/format";
 
 describe("pluralize", () => {
   it("uses the singular form for a count of one", () => {
@@ -42,5 +42,21 @@ describe("formatBytes", () => {
 
   it("rounds an exact tie up, like Python's fmt", () => {
     expect(formatBytes(1250)).toBe("1.3 KB");
+  });
+});
+
+describe("countWord", () => {
+  it("writes a small count in words, capitalised to open a sentence", () => {
+    expect(countWord(6)).toBe("six");
+    expect(countWord(3, true)).toBe("Three");
+  });
+
+  it("covers zero and twenty", () => {
+    expect(countWord(0, true)).toBe("Zero");
+    expect(countWord(20)).toBe("twenty");
+  });
+
+  it("falls back to the digits past twenty", () => {
+    expect(countWord(21, true)).toBe("21");
   });
 });

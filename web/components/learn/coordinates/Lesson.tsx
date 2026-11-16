@@ -14,9 +14,11 @@ import {
 } from "../../../lib/learn/coordinates-data";
 import { printed } from "../../../lib/learn/coordinates";
 import { Band } from "../../site/Band";
+import { type Chapter, Chapters } from "../../site/Chapters";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -78,6 +80,21 @@ const plusOne = (
   </M>
 );
 
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "question-h", label: "The question" },
+  { id: "concept-h", label: "Points, frames and affine maps" },
+  { id: "example-h", label: "Two possessions" },
+  { id: "time-h", label: "Two clocks on one axis" },
+  { id: "table-h", label: "One table, and the sign kept apart" },
+  { id: "matches-h", label: "From two possessions to every match" },
+  { id: "matters-h", label: "Why it matters" },
+  { id: "limitations-h", label: "Limitations" },
+  { id: "try-h", label: "Try it yourself" },
+  { id: "reproduce-h", label: "Reproduce it" },
+  { id: "reading-h", label: "Further reading" },
+];
+
 export function Lesson({ sql }: { sql: string }) {
   const views = [frameView(BB), frameView(FB)];
   const tracks = [clockTrack(BB), clockTrack(FB)];
@@ -100,6 +117,7 @@ export function Lesson({ sql }: { sql: string }) {
           little geometry and a little arithmetic on time make that work, and both fit on one page.
         </p>
       </LessonHead>
+      <Chapters items={CHAPTERS} />
       <Band>
         <section aria-labelledby="question-h">
           <h2 id="question-h">The question</h2>
@@ -515,26 +533,23 @@ export function Lesson({ sql }: { sql: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="mathworld-affine" full /> and <Cite id="mathworld-rotation" full />: affine maps, and why a
-              determinant tells a turn from a mirror.
-            </li>
-            <li>
-              <Cite id="nist-811-b8" full />: the exact factors between customary units and the SI.
-            </li>
-            <li>
-              <Cite id="skillcorner-bb-coords" full />, <Cite id="skillcorner-bb-lefthoop" full /> and{" "}
-              <Cite id="skillcorner-fb-coords" full />: the providers&apos; own conventions.
-            </li>
-            <li>
-              <a href="/engineering/quality">/engineering/quality</a>: the clock check behind the first columns of the table, beside the other
-              checks of the bundles.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="mathworld-affine" full /> and <Cite id="mathworld-rotation" full />: affine maps, and why a
+            determinant tells a turn from a mirror.
+          </li>
+          <li>
+            <Cite id="nist-811-b8" full />: the exact factors between customary units and the SI.
+          </li>
+          <li>
+            <Cite id="skillcorner-bb-coords" full />, <Cite id="skillcorner-bb-lefthoop" full /> and{" "}
+            <Cite id="skillcorner-fb-coords" full />: the providers&apos; own conventions.
+          </li>
+          <li>
+            <a href="/engineering/quality">/engineering/quality</a>: the clock check behind the first columns of the table, beside the other
+            checks of the bundles.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures figures={F} />
     </main>

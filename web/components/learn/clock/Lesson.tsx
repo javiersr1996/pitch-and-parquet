@@ -6,9 +6,11 @@ import { qualityFigure } from "../../../lib/learn/gravity-data";
 import { figureAt, matchFig } from "../../../lib/learn/json-figure";
 import { HOOK, QUALITY } from "../../../lib/quality";
 import { Band } from "../../site/Band";
+import { type Chapter, Chapters } from "../../site/Chapters";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -55,6 +57,19 @@ const sum = (body: ReactNode) => (
   </>
 );
 
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "question-h", label: "The question" },
+  { id: "concept-h", label: "A line through two clocks" },
+  { id: "example-h", label: "One possession" },
+  { id: "matches-h", label: "From one possession to ten matches" },
+  { id: "matters-h", label: "Why it matters" },
+  { id: "limitations-h", label: "Limitations" },
+  { id: "try-h", label: "Try it yourself" },
+  { id: "reproduce-h", label: "Reproduce it" },
+  { id: "reading-h", label: "Further reading" },
+];
+
 export function Lesson({ sql }: { sql: string }) {
   return (
     <main id="main" className="page lesson learn-clock">
@@ -75,6 +90,7 @@ export function Lesson({ sql }: { sql: string }) {
           {l("slope_for_g")}.
         </p>
       </LessonHead>
+      <Chapters items={CHAPTERS} />
       <Band>
         <section aria-labelledby="question-h">
           <h2 id="question-h">The question</h2>
@@ -299,24 +315,21 @@ export function Lesson({ sql }: { sql: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="nist-linear-ls" full />: what makes a model linear, and why a line is fitted in closed form.
-            </li>
-            <li>
-              <Cite id="nist-residuals" full />: residuals, and reading a fit from them.
-            </li>
-            <li>
-              <Cite id="skillcorner-gameclock" full />: the provider&apos;s definitions of every field of a tracking frame.
-            </li>
-            <li>
-              <a href="/learn/gravity">Does the ball obey gravity?</a>, the first lesson, for the low g and its two suspects, and{" "}
-              <a href="/learn/coordinates">Can a court and a pitch share one table?</a> for the frame clock&apos;s own check.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="nist-linear-ls" full />: what makes a model linear, and why a line is fitted in closed form.
+          </li>
+          <li>
+            <Cite id="nist-residuals" full />: residuals, and reading a fit from them.
+          </li>
+          <li>
+            <Cite id="skillcorner-gameclock" full />: the provider&apos;s definitions of every field of a tracking frame.
+          </li>
+          <li>
+            <a href="/learn/gravity">Does the ball obey gravity?</a>, the first lesson, for the low g and its two suspects, and{" "}
+            <a href="/learn/coordinates">Can a court and a pitch share one table?</a> for the frame clock&apos;s own check.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures file={CLOCK} examples={CLOCK_EXAMPLES} g={HOOK.g_data} G={HOOK.g_real} />
     </main>

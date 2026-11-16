@@ -2,9 +2,11 @@ import type { ReactNode } from "react";
 import { CLIPS, FACING, publishedFigure } from "../../../lib/learn/facing-data";
 import { facingFigures } from "../../../lib/learn/facing-figures";
 import { Band } from "../../site/Band";
+import { type Chapter, Chapters } from "../../site/Chapters";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -86,6 +88,19 @@ function ClipText({ c, q }: { c: (path: string) => ReactNode; q: (key: string) =
   );
 }
 
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "question-h", label: "The question" },
+  { id: "concept-h", label: "A direction as an angle" },
+  { id: "example-h", label: "One player" },
+  { id: "players-h", label: "From one player to every player" },
+  { id: "matters-h", label: "Why it matters" },
+  { id: "limitations-h", label: "Limitations" },
+  { id: "try-h", label: "Try it yourself" },
+  { id: "reproduce-h", label: "Reproduce it" },
+  { id: "reading-h", label: "Further reading" },
+];
+
 export function Lesson({ script }: { script: string }) {
   return (
     <main id="main" className="page lesson learn-facing">
@@ -104,6 +119,7 @@ export function Lesson({ script }: { script: string }) {
           direction, sets it against the direction the player is moving in, and shows what it takes to average an angle.
         </p>
       </LessonHead>
+      <Chapters items={CHAPTERS} />
       <Band>
         <section aria-labelledby="question-h">
           <h2 id="question-h">The question</h2>
@@ -450,26 +466,23 @@ export function Lesson({ script }: { script: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="scipy-circmean" full /> and <Cite id="scipy-circvar" full />: the mean resultant vector, its argument and its
-              length, as a library defines them.
-            </li>
-            <li>
-              <Cite id="skillcorner-bodypose-joints" full />: the provider&apos;s description of the joints, their coordinates and their
-              limits.
-            </li>
-            <li>
-              <a href="/learn/speed">Where does the provider&apos;s speed come from?</a>, the second lesson, for the central difference,
-              and <a href="/learn/cadence">How many steps per second?</a>, the fifth, for the same two clips read from the ankles.
-            </li>
-            <li>
-              <a href="/tracking/pose">/tracking/pose</a>: the viewer and the protocol behind the clips.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="scipy-circmean" full /> and <Cite id="scipy-circvar" full />: the mean resultant vector, its argument and its
+            length, as a library defines them.
+          </li>
+          <li>
+            <Cite id="skillcorner-bodypose-joints" full />: the provider&apos;s description of the joints, their coordinates and their
+            limits.
+          </li>
+          <li>
+            <a href="/learn/speed">Where does the provider&apos;s speed come from?</a>, the second lesson, for the central difference,
+            and <a href="/learn/cadence">How many steps per second?</a>, the fifth, for the same two clips read from the ankles.
+          </li>
+          <li>
+            <a href="/tracking/pose">/tracking/pose</a>: the viewer and the protocol behind the clips.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures clips={FACING} />
     </main>

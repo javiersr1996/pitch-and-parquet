@@ -4,9 +4,11 @@ import { DRIBBLE, TOUCH } from "../../../lib/learn/dribble-data";
 import { lessonDribbleFigures, type DribbleLessonFigures } from "../../../lib/learn/dribble-figures";
 import { figureAt, matchFig } from "../../../lib/learn/json-figure";
 import { Band } from "../../site/Band";
+import { type Chapter, Chapters } from "../../site/Chapters";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -39,6 +41,20 @@ const frac = (num: ReactNode, den: ReactNode) => (
   </mfrac>
 );
 
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "question-h", label: "The question" },
+  { id: "concept-h", label: "Points in time and a signal" },
+  { id: "example-h", label: "One touch" },
+  { id: "floor-h", label: "The lowest height is not the floor" },
+  { id: "matches-h", label: "From one touch to ten matches" },
+  { id: "matters-h", label: "Why it matters" },
+  { id: "limitations-h", label: "Limitations" },
+  { id: "try-h", label: "Try it yourself" },
+  { id: "reproduce-h", label: "Reproduce it" },
+  { id: "reading-h", label: "Further reading" },
+];
+
 export function Lesson({ sql }: { sql: string }) {
   return (
     <main id="main" className="page lesson learn-dribble">
@@ -58,6 +74,7 @@ export function Lesson({ sql }: { sql: string }) {
           {l("matches")} matches the ball&apos;s lowest point falls on the event&apos;s own frame. Where the two disagree is where the lesson looks.
         </p>
       </LessonHead>
+      <Chapters items={CHAPTERS} />
       <Band>
         <section aria-labelledby="question-h">
           <h2 id="question-h">The question</h2>
@@ -314,21 +331,18 @@ export function Lesson({ sql }: { sql: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="nist-autocorrelation" full />: what the autocorrelation of a signal shows.
-            </li>
-            <li>
-              <Cite id="skillcorner-dribbles" full />: the provider&apos;s definitions of every field of a dribble.
-            </li>
-            <li>
-              <a href="/learn/cadence">How many steps per second?</a>, the fifth lesson, for the same reading of a rhythm on a
-              body.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="nist-autocorrelation" full />: what the autocorrelation of a signal shows.
+          </li>
+          <li>
+            <Cite id="skillcorner-dribbles" full />: the provider&apos;s definitions of every field of a dribble.
+          </li>
+          <li>
+            <a href="/learn/cadence">How many steps per second?</a>, the fifth lesson, for the same reading of a rhythm on a
+            body.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures file={DRIBBLE} example={TOUCH} />
     </main>

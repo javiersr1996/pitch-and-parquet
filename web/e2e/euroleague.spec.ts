@@ -1,4 +1,5 @@
 import { expect, type Page, type Request, test } from "@playwright/test";
+import { hydrated } from "./fold";
 import { headerLinks, whole } from "./header";
 import type { League, Team } from "../lib/euroleague/atlas";
 import type { Pair, Runs } from "../lib/euroleague/runs";
@@ -217,25 +218,34 @@ test("runs and comebacks: the team chosen comes first, lit, and so do its rows",
 test("runs and comebacks on a phone: no sideways scroll, text of 16 px or more, ties kept", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/euroleague");
+  await hydrated(page);
   const strip = page.locator(".el-streaks-band");
   await strip.scrollIntoViewIfNeeded();
-  const m = await page.evaluate(() => {
-    const band = document.querySelector(".el-streaks-band")!;
-    const small = [...band.querySelectorAll("*")]
-      .filter((e) => [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent!.trim() !== ""))
-      .filter((e) => parseFloat(getComputedStyle(e).fontSize) < 16)
-      .map((e) => e.className || e.tagName);
-    const wide = [...band.querySelectorAll("*")].filter((e) => e.getBoundingClientRect().right > innerWidth + 0.5);
-    return {
-      page: document.documentElement.scrollWidth,
-      width: innerWidth,
-      small,
-      wide: wide.map((e) => e.className || e.tagName),
-    };
-  });
-  expect(m.page).toBeLessThanOrEqual(m.width);
-  expect(m.small).toEqual([]);
-  expect(m.wide).toEqual([]);
+  // One tab at a time (P32): a hidden panel has no box to overflow, so each is shown and measured.
+  for (const tab of ["Runs", "Comebacks", "By team"]) {
+    await strip.getByRole("tab", { name: tab }).click();
+    const m = await page.evaluate(() => {
+      const band = document.querySelector(".el-streaks-band")!;
+      const panel = band.querySelector('[role="tabpanel"]:not([hidden])')!;
+      const small = [...band.querySelectorAll("*")]
+        .filter((e) => [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent!.trim() !== ""))
+        .filter((e) => parseFloat(getComputedStyle(e).fontSize) < 16)
+        .map((e) => e.className || e.tagName);
+      const wide = [...band.querySelectorAll("*")].filter((e) => e.getBoundingClientRect().right > innerWidth + 0.5);
+      return {
+        page: document.documentElement.scrollWidth,
+        width: innerWidth,
+        small,
+        wide: wide.map((e) => e.className || e.tagName),
+        // What the panel on show gives the check to measure.
+        boxes: [...panel.querySelectorAll("*")].filter((e) => e.getBoundingClientRect().width > 0).length,
+      };
+    });
+    expect(m.boxes, tab).toBeGreaterThan(20);
+    expect(m.page, tab).toBeLessThanOrEqual(m.width);
+    expect(m.small, tab).toEqual([]);
+    expect(m.wide, tab).toEqual([]);
+  }
 });
 
 test("the keyboard steps through the hexagons with a visible focus", async ({ page }) => {

@@ -6,9 +6,11 @@ import { hypothesesFigures, type HypothesesFigures } from "../../../lib/learn/hy
 import { lessonFigures, type LessonFigures } from "../../../lib/learn/lesson-figures";
 import { QUALITY } from "../../../lib/quality";
 import { Band } from "../../site/Band";
+import { type Chapter, Chapters } from "../../site/Chapters";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -62,6 +64,21 @@ const sumU = (k: number) =>
     </mrow>
   );
 
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "question-h", label: "The question" },
+  { id: "concept-h", label: "A parabola by least squares" },
+  { id: "example-h", label: "One shot" },
+  { id: "matches-h", label: "From one shot to every match" },
+  { id: "not-h", label: "What does not explain it" },
+  { id: "data-h", label: "What the data add" },
+  { id: "matters-h", label: "Why it matters" },
+  { id: "limitations-h", label: "Limitations" },
+  { id: "try-h", label: "Try it yourself" },
+  { id: "reproduce-h", label: "Reproduce it" },
+  { id: "reading-h", label: "Further reading" },
+];
+
 export function Lesson({ sql }: { sql: string }) {
   return (
     <main id="main" className="page lesson">
@@ -80,6 +97,7 @@ export function Lesson({ sql }: { sql: string }) {
           the Earth were lighter.
         </p>
       </LessonHead>
+      <Chapters items={CHAPTERS} />
       <Band>
         <section aria-labelledby="question-h">
           <h2 id="question-h">The question</h2>
@@ -559,28 +577,25 @@ export function Lesson({ sql }: { sql: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="nist-linear-ls" full /> and <Cite id="nist-ls" full />: least squares, and why a quadratic counts as a
-              linear model.
-            </li>
-            <li>
-              <Cite id="webb-sign-test" full />: the sign test, step by step.
-            </li>
-            <li>
-              <Cite id="cgpm-1901" full /> and <Cite id="codata-gn" full />: where the standard value comes from.
-            </li>
-            <li>
-              <Cite id="skillcorner-tracking" full />: the provider&apos;s definitions of every field in the tracking files.
-            </li>
-            <li>
-              <a href="/engineering/quality">/engineering/quality</a> and the <a href="/engineering/bulletin">bulletin</a>: the check this lesson unpacks,
-              beside the other checks of the bundles.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="nist-linear-ls" full /> and <Cite id="nist-ls" full />: least squares, and why a quadratic counts as a
+            linear model.
+          </li>
+          <li>
+            <Cite id="webb-sign-test" full />: the sign test, step by step.
+          </li>
+          <li>
+            <Cite id="cgpm-1901" full /> and <Cite id="codata-gn" full />: where the standard value comes from.
+          </li>
+          <li>
+            <Cite id="skillcorner-tracking" full />: the provider&apos;s definitions of every field in the tracking files.
+          </li>
+          <li>
+            <a href="/engineering/quality">/engineering/quality</a> and the <a href="/engineering/bulletin">bulletin</a>: the check this lesson unpacks,
+            beside the other checks of the bundles.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures hook={GRAVITY_HOOK} matches={GRAVITY_MATCHES} hypotheses={HYPOTHESES} />
     </main>

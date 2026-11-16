@@ -5,9 +5,11 @@ import { qualityFigure } from "../../../lib/learn/gravity-data";
 import { figureAt } from "../../../lib/learn/json-figure";
 import { HOOK, QUALITY } from "../../../lib/quality";
 import { Band } from "../../site/Band";
+import { type Chapter, Chapters } from "../../site/Chapters";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -48,6 +50,20 @@ const sq = (x: ReactNode) => (
   </msup>
 );
 
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "question-h", label: "The question" },
+  { id: "concept-h", label: "Two ways to an angle" },
+  { id: "example-h", label: "One shot" },
+  { id: "sensitive-h", label: "What moves the two angles" },
+  { id: "matches-h", label: "From one shot to ten matches" },
+  { id: "matters-h", label: "Why it matters" },
+  { id: "limitations-h", label: "Limitations" },
+  { id: "try-h", label: "Try it yourself" },
+  { id: "reproduce-h", label: "Reproduce it" },
+  { id: "reading-h", label: "Further reading" },
+];
+
 export function Lesson({ script }: { script: string }) {
   return (
     <main id="main" className="page lesson learn-entry">
@@ -68,6 +84,7 @@ export function Lesson({ script }: { script: string }) {
           {l("method_gap")}° of it: part of the gap is the method&apos;s own.
         </p>
       </LessonHead>
+      <Chapters items={CHAPTERS} />
       <Band>
         <section aria-labelledby="question-h">
           <h2 id="question-h">The question</h2>
@@ -302,25 +319,22 @@ export function Lesson({ script }: { script: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="nasa-ballistic" full />: the flight of a ball without drag, worked out from its two components.
-            </li>
-            <li>
-              <Cite id="fiba-ring" full />: the dimensions of the basket.
-            </li>
-            <li>
-              <Cite id="skillcorner-shot-start" full />: the provider&apos;s definitions of every field of a shot.
-            </li>
-            <li>
-              <a href="/learn/gravity">Does the ball obey gravity?</a>, the first lesson, for the same heights and its two
-              scales, and <a href="/learn/clock">Does the game clock keep the video&apos;s time?</a> for the line through a
-              handful of samples.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="nasa-ballistic" full />: the flight of a ball without drag, worked out from its two components.
+          </li>
+          <li>
+            <Cite id="fiba-ring" full />: the dimensions of the basket.
+          </li>
+          <li>
+            <Cite id="skillcorner-shot-start" full />: the provider&apos;s definitions of every field of a shot.
+          </li>
+          <li>
+            <a href="/learn/gravity">Does the ball obey gravity?</a>, the first lesson, for the same heights and its two
+            scales, and <a href="/learn/clock">Does the game clock keep the video&apos;s time?</a> for the line through a
+            handful of samples.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures file={ENTRY} run={ENTRY_RUN} matches={ENTRY_MATCHES} hookG={HOOK.g_data} />
     </main>

@@ -4370,3 +4370,279 @@ figure.run-here {
 .skip-link:focus-visible {
   transform: none;
 }
+
+/* A fold (P32, task 209): reference material under its heading, one click away and still in the
+   HTML. The summary is a control in the neon line (a fine cyan edge, mono, a card's fill) that says
+   what is inside and how much; a plus that turns to a minus says whether it is open. */
+.fold > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  max-width: var(--measure);
+  min-height: var(--control-height);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--raised);
+  font-family: var(--font-neon);
+  font-weight: 600;
+  color: var(--link);
+  cursor: pointer;
+  list-style: none;
+}
+
+.fold > summary::-webkit-details-marker {
+  display: none;
+}
+
+.fold > summary::after {
+  content: "+";
+  content: "+" / "";
+  flex: none;
+  font-size: var(--step-3);
+  line-height: 1;
+}
+
+.fold[open] > summary::after {
+  content: "\2212";
+  content: "\2212" / "";
+}
+
+.fold > summary:hover {
+  border-color: var(--neon);
+  color: var(--link-hover);
+  box-shadow: 0 0 24px -8px var(--neon-glow);
+}
+
+.fold > summary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.fold[open] > summary {
+  margin-bottom: var(--space-5);
+}
+
+.fold-body > :first-child {
+  margin-top: 0;
+}
+
+.fold-body > :last-child {
+  margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fold > summary {
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+  }
+}
+
+/* The chapters of a long page (P32, task 210): fixed at the top while the page scrolls, a strip of
+   its h2s that scrolls sideways like the header's (faded at an edge where more wait), the current
+   one lit like the header's current link, and a cyan bar along the bottom for how far down the page
+   is. From 1888 px the wrap leaves room in the left margin, and the strip turns into a rail there.
+   Whatever the page scrolls into view clears the strip: a heading a link or the address lands on,
+   and a control the keyboard focuses (WCAG 2.4.11). */
+.chapters {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--neon-bg);
+  border-bottom: 1px solid var(--rule);
+}
+
+.chapters-row {
+  position: relative;
+}
+
+.chapters ol {
+  display: flex;
+  gap: 0 var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.chapters ol::-webkit-scrollbar {
+  display: none;
+}
+
+.chapters li {
+  flex: none;
+  max-width: none;
+}
+
+.chapters a {
+  display: block;
+  padding: var(--space-2) 0;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font-neon);
+  white-space: nowrap;
+  color: var(--fg-muted);
+  text-decoration: none;
+}
+
+.chapters a:hover {
+  color: var(--fg-strong);
+}
+
+.chapters a:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+.chapters a[aria-current] {
+  color: var(--neon);
+  border-bottom-color: var(--neon);
+}
+
+.chapters-progress {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  pointer-events: none;
+}
+
+.chapters-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--neon);
+  box-shadow: 0 0 8px var(--neon-glow);
+  transform: scaleX(var(--progress, 0));
+  transform-origin: left;
+}
+
+html:has([data-chapters]) {
+  scroll-padding-top: 4rem;
+}
+
+@media (max-width: 117.98rem) {
+  .chapters ol:not([data-end="true"]) {
+    mask-image: linear-gradient(to right, #000 calc(100% - var(--space-7)), transparent);
+  }
+
+  .chapters ol[data-start="false"] {
+    mask-image: linear-gradient(to left, #000 calc(100% - var(--space-7)), transparent);
+  }
+
+  .chapters ol[data-start="false"]:not([data-end="true"]) {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 var(--space-7),
+      #000 calc(100% - var(--space-7)),
+      transparent
+    );
+  }
+}
+
+@media (min-width: 118rem) {
+  .chapters {
+    height: 0;
+    border-bottom: 0;
+    background: none;
+  }
+
+  .chapters-row {
+    position: absolute;
+    top: var(--space-6);
+    left: calc((100% - var(--wrap)) / 2 - 15rem);
+    width: 13rem;
+    max-width: none;
+    max-height: calc(100vh - 2 * var(--space-6));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+  }
+
+  .chapters ol {
+    flex-direction: column;
+    overflow: visible;
+    border-left: 1px solid var(--rule);
+  }
+
+  .chapters a {
+    margin-left: -1px;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 0;
+    border-left: 2px solid transparent;
+    white-space: normal;
+  }
+
+  .chapters a[aria-current] {
+    border-left-color: var(--neon);
+  }
+
+  .chapters-progress {
+    position: static;
+    flex: none;
+    order: -1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .chapters a {
+    transition:
+      color 0.15s,
+      border-color 0.15s;
+  }
+}
+
+/* Tabs (P32, task 211): one of several long lists at a time. The row is the site's buttons, the
+   selected one filled like a primary button; the panels not on show are hidden. */
+.tabs-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block: var(--space-4);
+}
+
+.tabs-list [role="tab"][aria-selected="true"] {
+  border-color: var(--neon);
+  background: var(--neon);
+  color: var(--neon-bg);
+}
+
+.tabs-list [role="tab"][aria-selected="true"]:hover {
+  border-color: var(--neon-2);
+  background: var(--neon-2);
+  color: var(--neon-bg);
+}
+
+.tabs-list [role="tab"]:focus-visible,
+.tabs-panel:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Explore on a phone (P32, task 211): the cards in one row that scrolls sideways and snaps card by
+   card, the next one showing at the edge; from 640 px the grid as before. The row's padding leaves
+   room for a card's focus ring. */
+@media (max-width: 39.98rem) {
+  .home-explore .cards {
+    grid-template-columns: none;
+    grid-auto-columns: 85%;
+    grid-auto-flow: column;
+    margin-inline: -4px;
+    padding: 4px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: 4px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .home-explore .card {
+    scroll-snap-align: start;
+  }
+}

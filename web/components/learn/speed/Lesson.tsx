@@ -5,9 +5,11 @@ import { SPEED, SPEED_EXAMPLE, speedFig, speedFigure } from "../../../lib/learn/
 import { speedFigures, type SpeedFigures } from "../../../lib/learn/speed-figures";
 import { QUALITY } from "../../../lib/quality";
 import { Band } from "../../site/Band";
+import { type Chapter, Chapters } from "../../site/Chapters";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -72,6 +74,20 @@ const xn = (shift: ReactNode) => (
   </>
 );
 
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "question-h", label: "The question" },
+  { id: "concept-h", label: "Finite differences" },
+  { id: "example-h", label: "One player, one possession" },
+  { id: "matches-h", label: "From one player to every match" },
+  { id: "not-h", label: "What does not explain it" },
+  { id: "matters-h", label: "Why it matters" },
+  { id: "limitations-h", label: "Limitations" },
+  { id: "try-h", label: "Try it yourself" },
+  { id: "reproduce-h", label: "Reproduce it" },
+  { id: "reading-h", label: "Further reading" },
+];
+
 export function Lesson({ sql }: { sql: string }) {
   return (
     <main id="main" className="page lesson learn-speed">
@@ -87,6 +103,7 @@ export function Lesson({ sql }: { sql: string }) {
           {l("gap_hi")}&nbsp;m/s, median per match. The field behaves like the positions again, differentiated.
         </p>
       </LessonHead>
+      <Chapters items={CHAPTERS} />
       <Band>
         <section aria-labelledby="question-h">
           <h2 id="question-h">The question</h2>
@@ -563,28 +580,25 @@ export function Lesson({ sql }: { sql: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="dlmf-differentiation" full />: the two- and three-point formulas and their remainders.
-            </li>
-            <li>
-              <Cite id="scipy-savgol" full />: the Savitzky-Golay filter as most Python code calls it.
-            </li>
-            <li>
-              <Cite id="shaw-velocities" full />: a complete velocity recipe for tracking data, short enough to read in one
-              sitting.
-            </li>
-            <li>
-              <Cite id="skillcorner-speed" full />: the provider&apos;s definitions of every field in the tracking files.
-            </li>
-            <li>
-              <a href="/learn/gravity">Does the ball obey gravity?</a>, the first lesson, for least squares and centring;{" "}
-              <a href="/engineering/quality">/engineering/quality</a> and the <a href="/engineering/bulletin">bulletin</a> for the clock check.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="dlmf-differentiation" full />: the two- and three-point formulas and their remainders.
+          </li>
+          <li>
+            <Cite id="scipy-savgol" full />: the Savitzky-Golay filter as most Python code calls it.
+          </li>
+          <li>
+            <Cite id="shaw-velocities" full />: a complete velocity recipe for tracking data, short enough to read in one
+            sitting.
+          </li>
+          <li>
+            <Cite id="skillcorner-speed" full />: the provider&apos;s definitions of every field in the tracking files.
+          </li>
+          <li>
+            <a href="/learn/gravity">Does the ball obey gravity?</a>, the first lesson, for least squares and centring;{" "}
+            <a href="/engineering/quality">/engineering/quality</a> and the <a href="/engineering/bulletin">bulletin</a> for the clock check.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures example={SPEED_EXAMPLE} file={SPEED} />
     </main>

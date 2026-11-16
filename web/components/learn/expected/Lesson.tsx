@@ -4,9 +4,11 @@ import { EXPECTED, xpFigure, xpName } from "../../../lib/learn/expected-data";
 import { lessonExpectedFigures } from "../../../lib/learn/expected-figures";
 import { EUROLEAGUE, SITE, TAKEDOWN_CONTACT } from "../../../lib/sections";
 import { Band } from "../../site/Band";
+import { type Chapter, Chapters } from "../../site/Chapters";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -89,6 +91,20 @@ const tz = (
   </>
 );
 
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "question-h", label: "The question" },
+  { id: "concept-h", label: "What an attempt is worth" },
+  { id: "team-h", label: "A team against the league" },
+  { id: "teams-h", label: "Every team, both seasons" },
+  { id: "matters-h", label: "Why it matters" },
+  { id: "limitations-h", label: "Limitations" },
+  { id: "try-h", label: "Try it yourself" },
+  { id: "reproduce-h", label: "Reproduce it" },
+  { id: "data-h", label: "The data" },
+  { id: "reading-h", label: "Further reading" },
+];
+
 export function Lesson({ sql }: { sql: string }) {
   return (
     <main id="main" className="page lesson learn-expected">
@@ -108,6 +124,7 @@ export function Lesson({ sql }: { sql: string }) {
           points it can expect; how well it finishes from there does the rest. Expected points pull the two apart.
         </p>
       </LessonHead>
+      <Chapters items={CHAPTERS} />
       <Band>
         <section aria-labelledby="question-h">
           <h2 id="question-h">The question</h2>
@@ -436,17 +453,14 @@ export function Lesson({ sql }: { sql: string }) {
           </p>
         </section>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="mathworld-expectation" full />: the expected value of a random variable.
-            </li>
-            <li>
-              <a href="/euroleague">Where EuroLeague shoots from</a>: the same feed, binned into hexagons on the court.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="mathworld-expectation" full />: the expected value of a random variable.
+          </li>
+          <li>
+            <a href="/euroleague">Where EuroLeague shoots from</a>: the same feed, binned into hexagons on the court.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures file={FILE} />
     </main>

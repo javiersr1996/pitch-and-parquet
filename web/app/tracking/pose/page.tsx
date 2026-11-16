@@ -3,6 +3,8 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { Pose } from "../../../components/pose/Pose";
 import { Band, PageHead } from "../../../components/site/Band";
+import { type Chapter, Chapters } from "../../../components/site/Chapters";
+import { Tabs } from "../../../components/site/Tabs";
 import { formatBytes } from "../../../lib/format";
 import type { PoseClip, PoseSummary } from "../../../lib/pose/types";
 
@@ -194,6 +196,19 @@ function CoverageTable({ doc }: { doc: PoseSummary }) {
 // Columns of a metric row, by name, so the table does not count them.
 const col = (doc: PoseSummary, name: string) => doc.tables?.columns.indexOf(name) ?? -1;
 
+// Which match of the protocol a table's match is.
+const roleOf = (doc: PoseSummary, match: string) => (match === String(doc.protocol.calibration) ? "calibration" : "confirmation");
+
+// A match's tab (P32): one match's table at a time, the first as before.
+function MatchTab({ doc, match }: { doc: PoseSummary; match: string }) {
+  const role = roleOf(doc, match);
+  return (
+    <>
+      Match <S doc={doc} p={`protocol.${role}`} />, {role}
+    </>
+  );
+}
+
 function MetricTables({ doc }: { doc: PoseSummary }) {
   const tables = doc.tables;
   if (tables === null) return null;
@@ -207,54 +222,59 @@ function MetricTables({ doc }: { doc: PoseSummary }) {
     "finite_s",
   ].map((name) => col(doc, name));
   return (
-    <>
-      {Object.keys(tables.matches).map((match) => (
-        <div className="table-scroll" key={match}>
-          <table data-table="players" data-match={match}>
-            <caption>
-              Match <S doc={doc} p={`protocol.${match === String(doc.protocol.calibration) ? "calibration" : "confirmation"}`} />, by team and
-              shirt number, one row per player and band, the whole match
-            </caption>
-            <thead>
-              <tr>
-                <th>team</th>
-                <th>no.</th>
-                <th>player</th>
-                <th>band</th>
-                <th>windows</th>
-                <th>finite in s</th>
-                <th>cadence, Hz</th>
-                <th>step, m</th>
-                <th>ankle separation, m</th>
-                <th>separation over step</th>
-                <th>mean speed, m/s</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tables.matches[match].map((row, i) => {
-                if (row[period] !== "all") return null;
-                const r = `tables.matches.${match}.${i}`;
-                return (
-                  <tr key={i} data-row={`${match}.${i}`}>
-                    <td><S doc={doc} p={`${r}.${team}`} /></td>
-                    <td><S doc={doc} p={`${r}.${number}`} /></td>
-                    <td><S doc={doc} p={`${r}.${player}`} /></td>
-                    <td>{String(row[band])}</td>
-                    <td><S doc={doc} p={`${r}.${windows}`} /></td>
-                    <td><S doc={doc} p={`${r}.${finite}`} /></td>
-                    <td><Pm doc={doc} row={r} v={col(doc, "cad_s_p50_hz")} sd={col(doc, "cad_s_sd_hz")} /></td>
-                    <td><Pm doc={doc} row={r} v={col(doc, "step_length_p50_m")} sd={col(doc, "step_length_sd_m")} /></td>
-                    <td><Pm doc={doc} row={r} v={col(doc, "ankle_separation_p50_m")} sd={col(doc, "ankle_separation_sd_m")} /></td>
-                    <td><Pm doc={doc} row={r} v={col(doc, "separation_over_step")} sd={col(doc, "separation_over_step_sd")} /></td>
-                    <td><Pm doc={doc} row={r} v={col(doc, "speed_mean_m_s")} sd={-1} /></td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      ))}
-    </>
+    <Tabs
+      label="Cadence and step: match"
+      tabs={Object.keys(tables.matches).map((match) => ({
+        key: match,
+        label: <MatchTab doc={doc} match={match} />,
+        panel: (
+          <div className="table-scroll">
+            <table data-table="players" data-match={match}>
+              <caption>
+                Match <S doc={doc} p={`protocol.${roleOf(doc, match)}`} />, by team and
+                shirt number, one row per player and band, the whole match
+              </caption>
+              <thead>
+                <tr>
+                  <th>team</th>
+                  <th>no.</th>
+                  <th>player</th>
+                  <th>band</th>
+                  <th>windows</th>
+                  <th>finite in s</th>
+                  <th>cadence, Hz</th>
+                  <th>step, m</th>
+                  <th>ankle separation, m</th>
+                  <th>separation over step</th>
+                  <th>mean speed, m/s</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tables.matches[match].map((row, i) => {
+                  if (row[period] !== "all") return null;
+                  const r = `tables.matches.${match}.${i}`;
+                  return (
+                    <tr key={i} data-row={`${match}.${i}`}>
+                      <td><S doc={doc} p={`${r}.${team}`} /></td>
+                      <td><S doc={doc} p={`${r}.${number}`} /></td>
+                      <td><S doc={doc} p={`${r}.${player}`} /></td>
+                      <td>{String(row[band])}</td>
+                      <td><S doc={doc} p={`${r}.${windows}`} /></td>
+                      <td><S doc={doc} p={`${r}.${finite}`} /></td>
+                      <td><Pm doc={doc} row={r} v={col(doc, "cad_s_p50_hz")} sd={col(doc, "cad_s_sd_hz")} /></td>
+                      <td><Pm doc={doc} row={r} v={col(doc, "step_length_p50_m")} sd={col(doc, "step_length_sd_m")} /></td>
+                      <td><Pm doc={doc} row={r} v={col(doc, "ankle_separation_p50_m")} sd={col(doc, "ankle_separation_sd_m")} /></td>
+                      <td><Pm doc={doc} row={r} v={col(doc, "separation_over_step")} sd={col(doc, "separation_over_step_sd")} /></td>
+                      <td><Pm doc={doc} row={r} v={col(doc, "speed_mean_m_s")} sd={-1} /></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ),
+      }))}
+    />
   );
 }
 
@@ -275,7 +295,7 @@ function Concordance({ doc }: { doc: PoseSummary }) {
   const nan = col(doc, "m3_nan_h_share");
   return (
     <section data-section="m3">
-      <h2>Where the second signal disagrees</h2>
+      <h2 id="pose-m3">Where the second signal disagrees</h2>
       <p>
         This check compares the cadence of the ankles&apos; signal along the run with that of their
         vertical separation, in the fast band. It is a consistency check, not a verdict, and it carries no
@@ -287,41 +307,48 @@ function Concordance({ doc }: { doc: PoseSummary }) {
           <S doc={doc} p="tables.m3" />.
         </p>
       </details>
-      {Object.keys(tables.matches).map((match) => (
-        <div className="table-scroll" key={match}>
-          <table data-table="m3" data-match={match}>
-            <caption>
-              Match <S doc={doc} p={`protocol.${match === String(doc.protocol.calibration) ? "calibration" : "confirmation"}`} />{": the fast band, by team and shirt number"}
-            </caption>
-            <thead>
-              <tr>
-                <th>no.</th>
-                <th>player</th>
-                <th>windows</th>
-                <th>finite in s</th>
-                <th>median gap between the two cadences, Hz</th>
-                <th>share of windows with no vertical cadence</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tables.matches[match].map((row, i) => {
-                if (row[period] !== "all" || row[band] !== "high" || row[diff] === null) return null;
-                const r = `tables.matches.${match}.${i}`;
-                return (
-                  <tr key={i} data-row={`${match}.${i}`}>
-                    <td><S doc={doc} p={`${r}.${number}`} /></td>
-                    <td><S doc={doc} p={`${r}.${player}`} /></td>
-                    <td><S doc={doc} p={`${r}.${windows}`} /></td>
-                    <td><S doc={doc} p={`${r}.${finite}`} /></td>
-                    <td><S doc={doc} p={`${r}.${diff}`} /></td>
-                    <td><S doc={doc} p={`${r}.${nan}`} /></td>
+      <Tabs
+        label="Where the second signal disagrees: match"
+        tabs={Object.keys(tables.matches).map((match) => ({
+          key: match,
+          label: <MatchTab doc={doc} match={match} />,
+          panel: (
+            <div className="table-scroll">
+              <table data-table="m3" data-match={match}>
+                <caption>
+                  Match <S doc={doc} p={`protocol.${roleOf(doc, match)}`} />{": the fast band, by team and shirt number"}
+                </caption>
+                <thead>
+                  <tr>
+                    <th>no.</th>
+                    <th>player</th>
+                    <th>windows</th>
+                    <th>finite in s</th>
+                    <th>median gap between the two cadences, Hz</th>
+                    <th>share of windows with no vertical cadence</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      ))}
+                </thead>
+                <tbody>
+                  {tables.matches[match].map((row, i) => {
+                    if (row[period] !== "all" || row[band] !== "high" || row[diff] === null) return null;
+                    const r = `tables.matches.${match}.${i}`;
+                    return (
+                      <tr key={i} data-row={`${match}.${i}`}>
+                        <td><S doc={doc} p={`${r}.${number}`} /></td>
+                        <td><S doc={doc} p={`${r}.${player}`} /></td>
+                        <td><S doc={doc} p={`${r}.${windows}`} /></td>
+                        <td><S doc={doc} p={`${r}.${finite}`} /></td>
+                        <td><S doc={doc} p={`${r}.${diff}`} /></td>
+                        <td><S doc={doc} p={`${r}.${nan}`} /></td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ),
+        }))}
+      />
       <h3>What the protocol could not rule out</h3>
       <ul>
         {doc.protocol.blind_spots.map((_, i) => (
@@ -337,7 +364,7 @@ function Concordance({ doc }: { doc: PoseSummary }) {
 function Protocol({ doc }: { doc: PoseSummary }) {
   return (
     <section data-section="protocol">
-      <h2>The protocol, in the order it was written</h2>
+      <h2 id="pose-protocol">The protocol, in the order it was written</h2>
       <p>
         Match <S doc={doc} p="protocol.calibration" /> calibrates and match{" "}
         <S doc={doc} p="protocol.confirmation" /> confirms.{" "}
@@ -388,6 +415,24 @@ function View({
   onClip: (file: string) => void;
 }) {
   const mae = "coverage.p90_mae_cm";
+  // The chapters strip (P32): the h2s this view draws, in order; the clip's two only once it is loaded.
+  const chapters: Chapter[] = [
+    { id: "pose-limits", label: "What the data does not say" },
+    ...(clip
+      ? [
+          { id: "pose-clip", label: "The clip on show" },
+          { id: "pose-error", label: "The predicted error travels with each joint" },
+        ]
+      : []),
+    { id: "pose-coverage", label: "How much of each match has a pose" },
+    ...(doc.tables === null
+      ? [{ id: "pose-no-tables", label: "No table is published" }]
+      : [
+          { id: "pose-tables", label: "Cadence and step, per match and per player" },
+          { id: "pose-m3", label: "Where the second signal disagrees" },
+        ]),
+    { id: "pose-protocol", label: "The protocol, in the order it was written" },
+  ];
   return (
     <>
       <PageHead eyebrow="Body pose">
@@ -395,6 +440,7 @@ function View({
         {LEDE}
         <Status doc={doc} />
       </PageHead>
+      <Chapters items={chapters} />
       <Band dark>
         <div className="pose-layout">
           <div className="pose-stage">
@@ -426,7 +472,7 @@ function View({
             )}
           </div>
           <aside className="pose-limits" data-section="limits">
-            <h2>What the data does not say</h2>
+            <h2 id="pose-limits">What the data does not say</h2>
             {doc.limits.map((limit, j) => (
               <div key={limit.id} data-limit={limit.id}>
                 <blockquote data-fig={`limits.${j}.text`}>{limit.text}</blockquote>
@@ -443,7 +489,7 @@ function View({
         {clip ? (
           <>
             <section data-section="clip">
-              <h2>The clip on show</h2>
+              <h2 id="pose-clip">The clip on show</h2>
               <p>
                 Match <C clip={clip} p="match_id" />, period <C clip={clip} p="period" />, frames{" "}
                 <C clip={clip} p="frame_lo" /> to <C clip={clip} p="frame_hi" /> at <C clip={clip} p="fps" /> fps.
@@ -467,7 +513,7 @@ function View({
               </p>
             </section>
             <section data-section="error">
-              <h2>The predicted error travels with each joint</h2>
+              <h2 id="pose-error">The predicted error travels with each joint</h2>
               <p>
                 Every joint comes with SkillCorner&apos;s predicted error, <code>p90_mae_cm</code>. The viewer
                 draws a joint and its bones solid up to the clip&apos;s median,{" "}
@@ -479,7 +525,7 @@ function View({
           </>
         ) : null}
         <section data-section="coverage">
-          <h2>How much of each match has a pose</h2>
+          <h2 id="pose-coverage">How much of each match has a pose</h2>
           <p>
             Pose exists only where the provider resolved a player: in{" "}
             <S doc={doc} p={`coverage.${doc.protocol.calibration}.total.share_player_frames_with_pose`} /> of the
@@ -491,12 +537,12 @@ function View({
         </section>
         {doc.tables === null ? (
           <section data-section="no-tables">
-            <h2>No table is published</h2>
+            <h2 id="pose-no-tables">No table is published</h2>
             <p>A project that died is published without per-player tables.</p>
           </section>
         ) : (
           <section data-section="tables">
-            <h2>Cadence and step, per match and per player</h2>
+            <h2 id="pose-tables">Cadence and step, per match and per player</h2>
             <p>
               Each value is the median over that player&apos;s windows with a cadence, with the sd propagated
               from the joints&apos; predicted error beside it, and the number of windows it comes from in the

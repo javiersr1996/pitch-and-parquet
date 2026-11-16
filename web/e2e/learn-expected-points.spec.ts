@@ -3,6 +3,7 @@ import path from "node:path";
 import { expect as baseExpect, type Page, test } from "@playwright/test";
 import { display } from "../lib/learn/display";
 import { intervals } from "../lib/learn/expected";
+import { openFold } from "./fold";
 
 // Lesson 12 (task 117) in the browser. Every figure is read back from expected-points.json on
 // disk, and the ones the page computes are computed again here from its counts, never typed:
@@ -244,6 +245,7 @@ test.describe(ROUTE, () => {
     expect(urls.filter(isEngine), "engine requested before Run").toEqual([]);
     expect(urls.filter((u) => u.includes("/data/euroleague/")), "an aggregate fetched before Run").toEqual([]);
 
+    await openFold(page, "reproduce-h");
     const figure = page.locator("figure.run-here");
     await figure.getByRole("button", { name: "Run", exact: true }).click();
     await expect(figure).toHaveAttribute("data-query", /^(done|error)$/, { timeout: 120_000 });

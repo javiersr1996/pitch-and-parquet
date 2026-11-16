@@ -2,9 +2,11 @@ import type { ReactNode } from "react";
 import { CLIPS, column, FAST_ROWS, HOOKS, POSE, publishedFigure } from "../../../lib/learn/cadence-data";
 import { cadenceFigures } from "../../../lib/learn/cadence-figures";
 import { Band } from "../../site/Band";
+import { type Chapter, Chapters } from "../../site/Chapters";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -82,6 +84,20 @@ function PerMatchText({ match }: { match: string }) {
   );
 }
 
+// The chapters strip (P32): the page's h2s, in order.
+const CHAPTERS: readonly Chapter[] = [
+  { id: "question-h", label: "The question" },
+  { id: "concept-h", label: "A period from the autocorrelation" },
+  { id: "example-h", label: "One window" },
+  { id: "error-h", label: "Carrying the error through" },
+  { id: "players-h", label: "From one window to every player" },
+  { id: "matters-h", label: "Why it matters" },
+  { id: "limitations-h", label: "Limitations" },
+  { id: "try-h", label: "Try it yourself" },
+  { id: "reproduce-h", label: "Reproduce it" },
+  { id: "reading-h", label: "Further reading" },
+];
+
 export function Lesson({ script }: { script: string }) {
   return (
     <main id="main" className="page lesson learn-cadence">
@@ -100,6 +116,7 @@ export function Lesson({ script }: { script: string }) {
           that count from a repeating signal and works out how far the error lets it move.
         </p>
       </LessonHead>
+      <Chapters items={CHAPTERS} />
       <Band>
         <section aria-labelledby="question-h">
           <h2 id="question-h">The question</h2>
@@ -572,28 +589,25 @@ export function Lesson({ script }: { script: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="nist-autocorrelation" full />: the autocorrelation, its two normalisations and its band.
-            </li>
-            <li>
-              <Cite id="smith-parabola" full />: the parabola through a peak, derived.
-            </li>
-            <li>
-              <Cite id="nist-propagation" full /> and <Cite id="jcgm-101" full />: the propagation of error formula, and when
-              to draw instead.
-            </li>
-            <li>
-              <Cite id="skillcorner-bodypose" full />: the provider&apos;s description of the joints, their error and their
-              limits.
-            </li>
-            <li>
-              <a href="/tracking/pose">/tracking/pose</a>: the viewer, the protocol and every player&apos;s row this lesson draws.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="nist-autocorrelation" full />: the autocorrelation, its two normalisations and its band.
+          </li>
+          <li>
+            <Cite id="smith-parabola" full />: the parabola through a peak, derived.
+          </li>
+          <li>
+            <Cite id="nist-propagation" full /> and <Cite id="jcgm-101" full />: the propagation of error formula, and when
+            to draw instead.
+          </li>
+          <li>
+            <Cite id="skillcorner-bodypose" full />: the provider&apos;s description of the joints, their error and their
+            limits.
+          </li>
+          <li>
+            <a href="/tracking/pose">/tracking/pose</a>: the viewer, the protocol and every player&apos;s row this lesson draws.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures hooks={HOOKS} fast={FAST_ROWS} />
     </main>

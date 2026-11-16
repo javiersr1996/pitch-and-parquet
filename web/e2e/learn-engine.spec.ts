@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openFold } from "./fold";
 
 // Task 85, first step: the engine of "Run it here" (`lib/learn/engine.ts`, an instance of the
 // shared `lib/duckdb/engine.ts`) reads a published JSON file in the browser, loading the json
@@ -18,6 +19,7 @@ test("read_json runs in the browser with this deployment's json extension and no
   await page.waitForLoadState("networkidle");
   expect(seen.filter(isEngine), "engine requested before Run").toEqual([]);
 
+  await openFold(page, "reproduce-h");
   const figure = page.locator("figure.run-here");
   await expect(figure).toHaveAttribute("data-engine", "idle");
   await figure.getByLabel("SQL").fill("SELECT count(*) AS n FROM read_json('/data/learn/speed.json')");
