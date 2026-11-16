@@ -51,6 +51,16 @@ export function Chapters({ items }: { items: readonly Chapter[] }) {
     return () => io.disconnect();
   }, [items]);
 
+  // A link followed before hydration: the router has written back the address it started with, so
+  // the hash goes back for the heading the browser went to, which is still `:target`, and a
+  // `hashchange` tells a fold that has already read the address to read it again.
+  useEffect(() => {
+    const target = document.querySelector(":target");
+    if (location.hash || !target || !items.some((c) => c.id === target.id)) return;
+    history.replaceState(null, "", `#${target.id}`);
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+  }, [items]);
+
   // The progress bar follows the scroll, once a frame, written straight to its style; the same frame
   // says whether the page is at its foot.
   useEffect(() => {
@@ -106,6 +116,14 @@ export function Chapters({ items }: { items: readonly Chapter[] }) {
     if (fold) fold.open = true;
   };
 
+  // The strip a step along, for a mouse with no sideways wheel (P32b): most of its width at a time.
+  const step = (dir: -1 | 1) => {
+    const ol = list.current;
+    if (!ol) return;
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    ol.scrollBy({ left: dir * ol.clientWidth * 0.8, behavior: still ? "auto" : "smooth" });
+  };
+
   return (
     <nav className="chapters" aria-label="On this page" data-chapters>
       <div className="wrap chapters-row">
@@ -118,6 +136,13 @@ export function Chapters({ items }: { items: readonly Chapter[] }) {
             </li>
           ))}
         </ol>
+        {/* For the mouse only: the keyboard tabs along the links, and the strip follows the focus. */}
+        <button type="button" className="chapters-step" data-step="back" tabIndex={-1} aria-hidden="true" onClick={() => step(-1)}>
+          ‹
+        </button>
+        <button type="button" className="chapters-step" data-step="next" tabIndex={-1} aria-hidden="true" onClick={() => step(1)}>
+          ›
+        </button>
         <span className="chapters-progress" aria-hidden="true">
           <span ref={bar} />
         </span>

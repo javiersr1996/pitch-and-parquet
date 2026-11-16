@@ -319,7 +319,10 @@ export default function PlatformPage() {
           nodes and {LINEAGE.edges.length} edges, exported by <code>tracklab publish lineage</code>{" "}
           and checked against the graph by <code>tracklab publish lineage --check</code>. Hover or click a node to trace its upstream and downstream dependencies.
         </p>
-        <Lineage lineage={LINEAGE} />
+        {/* Folded (P32b): the graph is the tallest figure here, and the paragraph above says what it is. */}
+        <Fold heading="lineage" summary={`The asset graph: ${LINEAGE.nodes.length} nodes and ${LINEAGE.edges.length} edges, to hover or tap`}>
+          <Lineage lineage={LINEAGE} />
+        </Fold>
       </Band>
       <Band>
         <h2 id="matches">Bytes and rows, per match</h2>

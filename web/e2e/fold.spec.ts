@@ -90,6 +90,55 @@ test("printing opens every fold and closes again the ones that were closed", asy
   await expect(page.locator('details[data-fold="reading-h"]')).not.toHaveAttribute("open");
 });
 
+// P32b, task 215: a chip tapped while the page hydrates is a plain link, and the router, which read the
+// address before the tap, writes that address back when it commits: the hash is gone, the heading is
+// still `:target`. The fold still opens, and the address gets its hash back.
+test("a chapter's chip tapped before hydration opens its fold, on a CPU six times slower", async ({ page }) => {
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send("Emulation.setCPUThrottlingRate", { rate: 6 });
+  // The scripts are held back until the tap, as on a slow network, so the tap lands on the server's
+  // HTML: on a busy CPU alone a click waits for the main thread, which is hydrating. The race itself
+  // (tap between the router reading the address and writing it back) cannot be timed from here, so
+  // the router's write is played before the scripts run: the address without its hash, the target kept.
+  let release = () => {};
+  const held = new Promise<void>((resolve) => (release = resolve));
+  await page.route((url) => url.pathname.startsWith("/_next/static/") && url.pathname.endsWith(".js"), async (route) => {
+    await held;
+    await route.continue();
+  });
+  const bar = page.locator(".chapters-progress > span[style]");
+  await page.goto("/learn/pass", { waitUntil: "domcontentloaded" });
+  await page.locator('.chapters a[href="#reading-h"]').click();
+  // The tap came before hydration, or this test would not be testing it.
+  expect(await bar.count()).toBe(0);
+  await expect(page).toHaveURL(/#reading-h$/);
+  await page.evaluate(() => history.replaceState(null, "", location.pathname));
+  expect(await page.evaluate(() => [location.hash, document.querySelector(":target")?.id])).toEqual(["", "reading-h"]);
+  release();
+  await expect(bar).toBeAttached({ timeout: 30_000 });
+  await expect(page.locator('details[data-fold="reading-h"]')).toHaveAttribute("open", "");
+  await expect(page.locator('details[data-fold="reproduce-h"]')).not.toHaveAttribute("open");
+  await expect(page).toHaveURL(/#reading-h$/);
+});
+
+test("two beforeprint before one afterprint (Safari) leave the folds as they were", async ({ page }) => {
+  await page.goto("/learn/entry");
+  await hydrated(page);
+  await openFold(page, "limitations-h");
+  await page.evaluate(() => {
+    window.dispatchEvent(new Event("beforeprint"));
+    window.dispatchEvent(new Event("beforeprint"));
+  });
+  for (const id of FOLDS) await expect(page.locator(`details[data-fold="${id}"]`)).toHaveAttribute("open", "");
+  await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
+  await expect(page.locator('details[data-fold="limitations-h"]')).toHaveAttribute("open", "");
+  await expect(page.locator('details[data-fold="reproduce-h"]')).not.toHaveAttribute("open");
+  await expect(page.locator('details[data-fold="reading-h"]')).not.toHaveAttribute("open");
+  // A stray afterprint after that changes nothing either.
+  await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
+  await expect(page.locator('details[data-fold="limitations-h"]')).toHaveAttribute("open", "");
+});
+
 test("a fold opens and closes from the keyboard", async ({ page }) => {
   await page.goto("/learn/dribble");
   const summary = page.locator('details[data-fold="limitations-h"] > summary');

@@ -206,6 +206,78 @@ test("on a tall screen the last chapter is current at the foot of the page, and 
   }
 });
 
+// P32b, task 215: with the rail the strip takes no height, and the hairline it stood on goes to the
+// band below, so a lesson keeps one line between its head and its first band at every width.
+test("one hairline under a lesson's head, from the strip or, with the rail, from the band", async ({ page }) => {
+  for (const [width, height] of [
+    [1440, 900],
+    [1920, 1080],
+  ]) {
+    await page.setViewportSize({ width, height });
+    await open(page, "/learn/clock");
+    const line = await page.locator(".chapters").evaluate((nav) => ({
+      strip: getComputedStyle(nav).borderBottomWidth,
+      band: getComputedStyle(nav.nextElementSibling!).borderTopWidth,
+    }));
+    expect(line, `at ${width}`).toEqual(width >= 1888 ? { strip: "0px", band: "1px" } : { strip: "1px", band: "0px" });
+  }
+});
+
+// P32b, task 215: from 640 px a mouse with no sideways wheel scrolls the strip by its step buttons.
+test.describe("the strip's step buttons", () => {
+  test.use({ viewport: { width: 1024, height: 768 } });
+
+  test("reach the last chapter by mouse, and the keyboard never stops on them", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await open(page, "/learn/coordinates");
+    const ol = page.locator(".chapters ol");
+    const next = page.locator('.chapters-step[data-step="next"]');
+    const back = page.locator('.chapters-step[data-step="back"]');
+    const last = page.locator(".chapters li").last().locator("a");
+    const inStrip = async () => {
+      const [a, s] = [(await last.boundingBox())!, (await ol.boundingBox())!];
+      return a.x >= s.x - 1 && a.x + a.width <= s.x + s.width + 1;
+    };
+    await expect(back).toBeHidden();
+    await expect(next).toBeVisible();
+    expect(await inStrip()).toBe(false);
+    expect(await next.getAttribute("tabindex")).toBe("-1");
+    // Click by click, each time once the strip has moved and marked its edges again.
+    for (let i = 0; i < 10 && (await ol.getAttribute("data-end")) !== "true"; i++) {
+      const before = await ol.evaluate((el) => el.scrollLeft);
+      await next.click();
+      await expect.poll(() => ol.evaluate((el) => el.scrollLeft)).toBeGreaterThan(before);
+      await expect
+        .poll(() => ol.evaluate((el) => el.dataset.end === String(el.scrollLeft + el.clientWidth >= el.scrollWidth - 1)))
+        .toBe(true);
+    }
+    await expect(ol).toHaveAttribute("data-end", "true");
+    await expect(next).toBeHidden();
+    await expect(back).toBeVisible();
+    expect(await inStrip()).toBe(true);
+    await last.click();
+    await expect(page.locator('details[data-fold="reading-h"]')).toHaveAttribute("open", "");
+  });
+
+  test("a step glides where motion is welcome", async ({ page }) => {
+    await open(page, "/learn/coordinates");
+    const ol = page.locator(".chapters ol");
+    await page.locator('.chapters-step[data-step="next"]').click();
+    await expect.poll(() => ol.evaluate((el) => el.scrollLeft)).toBeGreaterThan(200);
+  });
+
+  test("no step buttons on a phone, which swipes, nor beside the rail", async ({ page }) => {
+    for (const [width, height] of [
+      [390, 844],
+      [1920, 1080],
+    ]) {
+      await page.setViewportSize({ width, height });
+      await open(page, "/learn/coordinates");
+      await expect(page.locator(".chapters-step:visible")).toHaveCount(0);
+    }
+  });
+});
+
 test("with reduced motion nothing new moves", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await open(page, "/learn/clock");

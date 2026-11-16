@@ -14,7 +14,8 @@ function hashId(): string {
 // Reference material folded under its heading (P32, task 209): a `<details>` whose summary says what
 // is inside and how much. Closed, its content is still in the HTML, where the figures' checks read
 // it. It opens on its own when the address points at its heading (`heading`) or at anything inside
-// it, on load and on every `hashchange`, and for printing, closing again after if it was closed.
+// it, on load and on every `hashchange`, and for printing, closing again after if it was closed; a
+// second `beforeprint` before the `afterprint` (Safari sends two) changes nothing.
 export function Fold({
   heading,
   summary,
@@ -36,13 +37,16 @@ export function Fold({
       // The heading sits above the fold and stays put; a target inside it has only now got a place.
       if (id !== heading) target.scrollIntoView();
     };
+    let printing = false;
     let closed = false;
     const beforePrint = () => {
-      closed = !fold.open;
+      if (!printing) closed = !fold.open;
+      printing = true;
       fold.open = true;
     };
     const afterPrint = () => {
-      if (closed) fold.open = false;
+      if (printing && closed) fold.open = false;
+      printing = false;
     };
     reveal();
     window.addEventListener("hashchange", reveal);

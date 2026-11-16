@@ -4524,7 +4524,7 @@ html:has([data-chapters]) {
   scroll-padding-top: 4rem;
 }
 
-@media (max-width: 117.98rem) {
+@media (width < 118rem) {
   .chapters ol:not([data-end="true"]) {
     mask-image: linear-gradient(to right, #000 calc(100% - var(--space-7)), transparent);
   }
@@ -4629,7 +4629,7 @@ html:has([data-chapters]) {
 /* Explore on a phone (P32, task 211): the cards in one row that scrolls sideways and snaps card by
    card, the next one showing at the edge; from 640 px the grid as before. The row's padding leaves
    room for a card's focus ring. */
-@media (max-width: 39.98rem) {
+@media (width < 640px) {
   .home-explore .cards {
     grid-template-columns: none;
     grid-auto-columns: 85%;
@@ -4644,5 +4644,102 @@ html:has([data-chapters]) {
 
   .home-explore .card {
     scroll-snap-align: start;
+  }
+}
+
+/* /engineering on a narrow screen (P32b, task 214): where the layers, the sources and the
+   guarantees would stack in one column, each is a row that scrolls sideways and snaps card by
+   card, the next card showing at the edge. The architecture above stays whole: it is the overview.
+   The row's padding leaves room for a focus ring. */
+@media (width < 560px) {
+  .platform-layers {
+    grid-template-columns: none;
+    grid-auto-columns: 85%;
+    grid-auto-flow: column;
+    margin-inline: -4px;
+    padding: 4px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: 4px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .platform-layer {
+    scroll-snap-align: start;
+  }
+}
+
+@media (width < 900px) {
+  .platform-sources,
+  .platform-guarantees {
+    grid-template-columns: none;
+    grid-auto-columns: min(85%, 26rem);
+    grid-auto-flow: column;
+    margin-inline: -4px;
+    padding: 4px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: 4px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .platform-sources > li,
+  .platform-guarantees > li {
+    scroll-snap-align: start;
+  }
+}
+
+/* The chapters strip for a mouse with no sideways wheel (P32b, task 215): from 640 px, where the
+   pointer hovers, a step button over each faded edge that has more chapters past it, scrolling the
+   strip most of its width. A phone swipes; the keyboard tabs along the links. */
+.chapters-step {
+  display: none;
+}
+
+@media (40rem <= width < 118rem) and (hover: hover) and (pointer: fine) {
+  .chapters-step {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    align-items: center;
+    width: var(--space-7);
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    font-size: var(--step-3);
+    line-height: 1;
+    letter-spacing: 0;
+    color: var(--neon);
+  }
+
+  .chapters-step[data-step="back"] {
+    left: var(--gutter);
+    justify-content: flex-start;
+    background: linear-gradient(to right, var(--neon-bg) 60%, transparent);
+  }
+
+  .chapters-step[data-step="next"] {
+    right: var(--gutter);
+    justify-content: flex-end;
+    background: linear-gradient(to left, var(--neon-bg) 60%, transparent);
+  }
+
+  .chapters ol[data-start="false"] ~ .chapters-step[data-step="back"],
+  .chapters ol[data-end="false"] ~ .chapters-step[data-step="next"] {
+    display: flex;
+  }
+
+  .chapters-step:hover:not(:disabled) {
+    color: var(--fg-strong);
+  }
+}
+
+/* With the rail (P32b, task 215) the strip takes no height, and the hairline that splits two bands
+   of one tone, which the strip stood between, is drawn again. */
+@media (min-width: 118rem) {
+  .band:not(.surface-dark) + .chapters + .band:not(.surface-dark),
+  .band.surface-dark + .chapters + .band.surface-dark {
+    border-top: 1px solid var(--rule);
   }
 }

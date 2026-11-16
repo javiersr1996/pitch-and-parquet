@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openFold } from "./fold";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -78,6 +79,7 @@ test("the Gantt scrolls inside its own box at 390 px, never the page", async ({ 
 test("every lineage node has a description and the panel shows it on selection", async ({ page }) => {
   expect(lineage.nodes.filter((n) => !n.description.trim())).toEqual([]);
   await page.goto("/engineering");
+  await openFold(page, "lineage");
   for (const key of ["bronze_basketball_events_drives", "quality_gravity", "silver_frames"]) {
     const node = lineage.nodes.find((n) => n.key === key)!;
     await page.locator(`[data-node="${key}"]`).click();
