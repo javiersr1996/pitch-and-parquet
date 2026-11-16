@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 
 // Every link of the header as a reader sees it: its box, and the part of it its row shows. On a
 // phone the entries and a group's pages are strips that scroll sideways (P21), so a link past a
@@ -17,7 +17,11 @@ export interface HeaderLink {
   size: number;
 }
 
-export function headerLinks(page: Page): Promise<HeaderLink[]> {
+// Read once the header has hydrated: only then has Nav.tsx brought the current link into its strip
+// and marked the strip's edges, which the server's HTML cannot do. On a slow machine a lesson's
+// page hydrates after its load event (seen in Linux Chromium in Docker).
+export async function headerLinks(page: Page): Promise<HeaderLink[]> {
+  await expect(page.locator(".site-header nav ul:not([data-end])")).toHaveCount(0);
   return page.locator(".site-header a").evaluateAll((els) =>
     els.map((e) => {
       const r = e.getBoundingClientRect();
