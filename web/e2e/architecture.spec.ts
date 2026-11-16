@@ -25,7 +25,7 @@ for (const route of ROUTES) {
     await expect(fig).toHaveCount(1);
     const caption = fig.locator("figcaption");
     await expect(caption).toHaveAttribute("id", (await fig.getAttribute("aria-labelledby"))!);
-    await expect(caption).toContainText("EuroLeague");
+    await expect(caption).toContainText("Gold also loads into Postgres, outside Dagster.");
     await expect(fig.locator("[data-arch-stage]")).toHaveCount(p.layers.length);
     for (const l of p.layers) {
       await expect(fig.locator(`[data-layer-bytes="${l.layer}"]`)).toHaveText(formatBytes(l.bytes));

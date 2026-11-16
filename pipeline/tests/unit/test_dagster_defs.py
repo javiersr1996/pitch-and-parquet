@@ -16,7 +16,7 @@ import tracklab.bronze.basketball.meta
 import tracklab.bronze.basketball.tracking
 import tracklab.bronze.football.meta
 import tracklab.bronze.football.tracking
-from tracklab.dagster_defs import assets_pose, assets_runs, defs
+from tracklab.dagster_defs import assets_pose, defs
 from tracklab.dagster_defs.assets_bronze import BRONZE_TABLES, bronze_key
 
 SCHEMAS_DIR = Path("src/tracklab/bronze/schemas")
@@ -78,58 +78,6 @@ def test_every_job_runs_the_dbt_steps_one_at_a_time() -> None:
         assert limits == [{"key": "tracklab/duckdb", "value": "dbt", "limit": 1}], name
 
 
-RUNS_ASSETS = {"runs_protocol", "runs_coverage", "runs_probe", "runs_effect", "publish_runs"}
-
-
-def test_the_runs_group_holds_the_five_p5_assets() -> None:
-    graph = defs.resolve_asset_graph()
-    in_group = {
-        k.to_user_string() for k in graph.get_all_asset_keys() if graph.get(k).group_name == "runs"
-    }
-    assert in_group == RUNS_ASSETS
-
-
-def test_the_runs_assets_only_check_and_fail_when_the_check_fails(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """P5 is dead with its protocol in `design`: an asset that wrote would move `head` and
-    `code_tree_sha` and then compare the file with itself. Each calls its command with
-    `check=True`, and a non-zero exit fails the asset."""
-    seen: dict[str, bool] = {}
-    exit_code = {"value": 0}
-
-    def fake(name: str):  # type: ignore[no-untyped-def]
-        def run(*args: object, check: bool = False) -> int:
-            seen[name] = check
-            return exit_code["value"]
-
-        return run
-
-    for attr in (
-        "run_runs_protocol",
-        "run_runs_coverage",
-        "run_runs_probe",
-        "run_runs_effect",
-        "run_publish_runs",
-    ):
-        monkeypatch.setattr(assets_runs, attr, fake(attr))
-
-    assert materialize(assets_runs.runs_assets).success
-    assert seen == dict.fromkeys(
-        (
-            "run_runs_protocol",
-            "run_runs_coverage",
-            "run_runs_probe",
-            "run_runs_effect",
-            "run_publish_runs",
-        ),
-        True,
-    )
-
-    exit_code["value"] = 1
-    assert not materialize(assets_runs.runs_assets, raise_on_error=False).success
-
-
 POSE_ASSETS = {"pose_coverage", "pose_protocol", "pose_metric", "publish_pose"}
 
 
@@ -144,8 +92,8 @@ def test_the_pose_group_holds_the_four_p6_assets() -> None:
 def test_the_pose_assets_only_check_and_fail_when_the_check_fails(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Like the runs group: the metric and the publication read the confirmation match past a
-    guard that refuses a dirty tree, so an asset that wrote would compare a file with itself.
+    """The metric and the publication read the confirmation match past a guard that refuses a
+    dirty tree, so an asset that wrote would compare a file with itself.
     Each calls its command with `check=True`; a non-zero exit fails the asset."""
     seen: dict[str, bool] = {}
     exit_code = {"value": 0}

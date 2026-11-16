@@ -444,7 +444,7 @@ test("a followed player who drops out of a whole-match clip leaves an empty pane
   }
 });
 
-// The three states the page has a branch for, each handed to it as a file (as /tracking/runs is).
+// The three states the page has a branch for, each handed to it as a file.
 for (const name of ["alive", "unreplicated", "dead"] as const) {
   test(`the ${name} branch shows its own state, with its figures from the file`, async ({ page }) => {
     const summary = fixture(name);

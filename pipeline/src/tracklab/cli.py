@@ -8,13 +8,11 @@ from __future__ import annotations
 
 import argparse
 import contextlib
-import importlib
 import os
 import re
 import sys
 import time
 from collections.abc import Callable, Sequence
-from datetime import date
 from pathlib import Path
 from typing import TextIO
 
@@ -29,9 +27,6 @@ from tracklab.bronze.football.events import build_events as build_football_event
 from tracklab.bronze.football.meta import build_meta as build_football_meta
 from tracklab.bronze.football.tracking import build_tracking as build_football_tracking
 from tracklab.build import default_record_dir, run_build
-from tracklab.euroleague.aggregates import SEASONS as EUROLEAGUE_SEASONS
-from tracklab.euroleague.aggregates import run_euroleague_publish
-from tracklab.euroleague.sweep import run_euroleague_sweep
 from tracklab.fixtures import run_fixtures
 from tracklab.formats.basketball import freeze_basketball
 from tracklab.formats.football_report import freeze_football
@@ -66,16 +61,11 @@ from tracklab.publish.platform import run_publish_platform
 from tracklab.publish.pose import run_publish_pose
 from tracklab.publish.possessions import run_publish_possessions
 from tracklab.publish.quality import run_publish_quality
-from tracklab.publish.runs import run_publish_runs
 from tracklab.publish.scouting import run_publish_scouting
 from tracklab.publish.stats import run_publish_stats
 from tracklab.publish.warehouse import run_publish_warehouse
 from tracklab.publish.warehouse_pg import WHERE, run_publish_warehouse_pg
 from tracklab.quality.run import CHECKS, run_quality
-from tracklab.runs.candidates import run_runs_effect, run_runs_freeze
-from tracklab.runs.coverage import run_runs_coverage
-from tracklab.runs.probe import run_runs_probe
-from tracklab.runs.protocol import run_runs_protocol
 from tracklab.silver.orientation import SPORTS, run_orientation
 from tracklab.silver.possessions import run_possessions
 from tracklab.silver.stats import run_stats
@@ -239,10 +229,6 @@ def _cmd_publish_occupancy(args: argparse.Namespace) -> int:
     return run_publish_occupancy(args.data_dir, args.out_dir, check=args.check)
 
 
-def _cmd_publish_runs(args: argparse.Namespace) -> int:
-    return run_publish_runs(args.data_dir, args.reports_dir, args.out_dir, check=args.check)
-
-
 def _cmd_pose_coverage(args: argparse.Namespace) -> int:
     return run_pose_coverage(args.data_dir, args.reports_dir, check=args.check)
 
@@ -319,26 +305,6 @@ def _cmd_fixtures(args: argparse.Namespace) -> int:
     return run_fixtures(data_dir=args.data_dir, out_dir=args.out_dir)
 
 
-def _cmd_runs_protocol(args: argparse.Namespace) -> int:
-    return run_runs_protocol(args.data_dir, args.reports_dir, check=args.check)
-
-
-def _cmd_runs_coverage(args: argparse.Namespace) -> int:
-    return run_runs_coverage(args.data_dir, args.reports_dir, check=args.check)
-
-
-def _cmd_runs_probe(args: argparse.Namespace) -> int:
-    return run_runs_probe(args.data_dir, args.reports_dir, check=args.check)
-
-
-def _cmd_runs_effect(args: argparse.Namespace) -> int:
-    return run_runs_effect(args.data_dir, args.reports_dir, check=args.check)
-
-
-def _cmd_runs_freeze(args: argparse.Namespace) -> int:
-    return run_runs_freeze(args.reports_dir, date=args.date)
-
-
 def _cmd_learn_gravity(args: argparse.Namespace) -> int:
     return run_learn_gravity(args.data_dir, args.quality, check=args.check)
 
@@ -381,28 +347,6 @@ def _cmd_learn_browser(args: argparse.Namespace) -> int:
 
 def _cmd_sql_course(args: argparse.Namespace) -> int:
     return run_sql_course(args.public, check=args.check)
-
-
-def _cmd_euroleague_fetch(args: argparse.Namespace) -> int:
-    # The downloader is not part of the repository: the command runs only where the file is.
-    # Imported by name, so the type check reads the same with the file and without it.
-    try:
-        fetch = importlib.import_module("tracklab.euroleague.fetch")
-    except ModuleNotFoundError:
-        print("euroleague fetch: the downloader is not part of this repository", file=sys.stderr)
-        return 2
-    return int(fetch.run_euroleague_fetch(args.season, args.data_dir))
-
-
-def _cmd_euroleague_publish(args: argparse.Namespace) -> int:
-    seasons = args.season or list(EUROLEAGUE_SEASONS)
-    return run_euroleague_publish(args.data_dir, args.out_dir, seasons, check=args.check)
-
-
-def _cmd_euroleague_sweep(args: argparse.Namespace) -> int:
-    return run_euroleague_sweep(
-        args.data_dir, args.web_dir, args.season or list(EUROLEAGUE_SEASONS)
-    )
 
 
 def _cmd_build(args: argparse.Namespace) -> int:
@@ -805,36 +749,6 @@ def build_parser() -> argparse.ArgumentParser:
     )
     publish_occupancy.set_defaults(func=_cmd_publish_occupancy)
 
-    publish_runs = publish_sub.add_parser(
-        "runs",
-        help="Write runs.json (P5, published dead: the figures of the reports, the funnel, "
-        "the per-match tables) and the hook's two clips under runs/.",
-    )
-    publish_runs.add_argument(
-        "--data-dir",
-        type=Path,
-        default=data_root(),
-        help="Data root; the calibration frames of the clips are read from it (default: data).",
-    )
-    publish_runs.add_argument(
-        "--reports-dir",
-        type=Path,
-        default=Path("reports"),
-        help="Where the P5 reports live (default: reports).",
-    )
-    publish_runs.add_argument(
-        "--out-dir",
-        type=Path,
-        default=Path("../web/public/data"),
-        help="Where runs.json and runs/ go (default: ../web/public/data).",
-    )
-    publish_runs.add_argument(
-        "--check",
-        action="store_true",
-        help="Regenerate in memory and compare with the files on disk; write nothing.",
-    )
-    publish_runs.set_defaults(func=_cmd_publish_runs)
-
     publish_pose = publish_sub.add_parser(
         "pose",
         help="Write the Body Pose sample's clip (P6) under pose/ and its record, "
@@ -1181,132 +1095,6 @@ def build_parser() -> argparse.ArgumentParser:
         )
         sub.set_defaults(func=func)
 
-    runs = subparsers.add_parser(
-        "runs", help="P5: off-ball runs against the defence's displacement in the tracking."
-    )
-    runs_sub = runs.add_subparsers(dest="runs_command", required=True)
-    runs_protocol = runs_sub.add_parser(
-        "protocol",
-        help="Write reports/runs_protocol.json: the split, the windows, the placebo, the "
-        "instrument, the bar and the death criteria, as code, before any outcome.",
-    )
-    runs_protocol.add_argument(
-        "--data-dir",
-        type=Path,
-        default=data_root(),
-        help="Data root; silver/dim_match and the football bronze events are read from it "
-        "(default: data).",
-    )
-    runs_protocol.add_argument(
-        "--reports-dir",
-        type=Path,
-        default=Path("reports"),
-        help="Where runs_protocol.json goes and quality_partitions.csv is read from "
-        "(default: reports).",
-    )
-    runs_protocol.add_argument(
-        "--check",
-        action="store_true",
-        help="Regenerate in memory and compare with the versioned file; write nothing.",
-    )
-    runs_protocol.set_defaults(func=_cmd_runs_protocol)
-    runs_coverage = runs_sub.add_parser(
-        "coverage",
-        help="Write reports/runs_coverage.csv: runs, windows, detection and placebos per match "
-        "for the 20 matches, as counts and never an outcome.",
-    )
-    runs_coverage.add_argument(
-        "--data-dir",
-        type=Path,
-        default=data_root(),
-        help="Data root; silver frames and the football bronze events are read from it "
-        "(default: data).",
-    )
-    runs_coverage.add_argument(
-        "--reports-dir",
-        type=Path,
-        default=Path("reports"),
-        help="Where runs_coverage.csv goes (default: reports); the split is read from the "
-        "protocol committed in HEAD, never from a file at hand.",
-    )
-    runs_coverage.add_argument(
-        "--check",
-        action="store_true",
-        help="Recount the matches at hand and compare with the versioned file; write nothing.",
-    )
-    runs_coverage.set_defaults(func=_cmd_runs_coverage)
-    runs_probe = runs_sub.add_parser(
-        "probe",
-        help="Write reports/runs_calibration.json, section probe: death probe 1 of P5 on the "
-        "calibration half (cadence, instrument, real null, power); no effect per subtype.",
-    )
-    runs_probe.add_argument(
-        "--data-dir",
-        type=Path,
-        default=data_root(),
-        help="Data root; silver frames and the football bronze events are read from it "
-        "(default: data).",
-    )
-    runs_probe.add_argument(
-        "--reports-dir",
-        type=Path,
-        default=Path("reports"),
-        help="Where runs_calibration.json goes (default: reports); the split is read from the "
-        "protocol committed in HEAD, never from a file at hand.",
-    )
-    runs_probe.add_argument(
-        "--check",
-        action="store_true",
-        help="Regenerate where the warehouse holds the 20 matches and compare with the "
-        "versioned file, else verify its seal and consistency; write nothing.",
-    )
-    runs_probe.set_defaults(func=_cmd_runs_probe)
-    runs_effect = runs_sub.add_parser(
-        "effect",
-        help="Write reports/runs_calibration.json, section effect: death probe 2 of P5 on the "
-        "calibration half (effect per probable subtype, pre-trend, fully detected, class at "
-        "t_c), next to the probe's section.",
-    )
-    runs_effect.add_argument(
-        "--data-dir",
-        type=Path,
-        default=data_root(),
-        help="Data root; silver frames and the football bronze events are read from it "
-        "(default: data).",
-    )
-    runs_effect.add_argument(
-        "--reports-dir",
-        type=Path,
-        default=Path("reports"),
-        help="Where runs_calibration.json lives (default: reports); the split is read from "
-        "the protocol committed in HEAD, never from a file at hand.",
-    )
-    runs_effect.add_argument(
-        "--check",
-        action="store_true",
-        help="Regenerate the section where the warehouse holds the calibration matches and "
-        "compare with the versioned file, else verify its seal and consistency; write nothing.",
-    )
-    runs_effect.set_defaults(func=_cmd_runs_effect)
-    runs_freeze = runs_sub.add_parser(
-        "freeze",
-        help="Turn reports/runs_protocol.json to stage frozen with the candidates of the "
-        "effect section and the sha of the committed runs/ tree; writes the file, commits "
-        "nothing (the commit is the freeze).",
-    )
-    runs_freeze.add_argument(
-        "--reports-dir",
-        type=Path,
-        default=Path("reports"),
-        help="Where runs_protocol.json and runs_calibration.json live (default: reports).",
-    )
-    runs_freeze.add_argument(
-        "--date",
-        default=date.today().isoformat(),
-        help="The date of the frozen history entry (default: today).",
-    )
-    runs_freeze.set_defaults(func=_cmd_runs_freeze)
-
     learn = subparsers.add_parser("learn", help="P8: the checks behind the /learn lessons.")
     learn_sub = learn.add_subparsers(dest="learn_command", required=True)
     learn_gravity = learn_sub.add_parser(
@@ -1650,77 +1438,6 @@ def build_parser() -> argparse.ArgumentParser:
         "(TRACKLAB_REQUIRE_FULL does the same).",
     )
     build.set_defaults(func=_cmd_build)
-
-    euroleague = subparsers.add_parser(
-        "euroleague", help="P14: EuroLeague game files (kept under the data root, never in git)."
-    )
-    euroleague_sub = euroleague.add_subparsers(dest="euroleague_command", required=True)
-    euroleague_fetch = euroleague_sub.add_parser(
-        "fetch",
-        help="Download Points, PlaybyPlay and Boxscore of every played game, incrementally, "
-        "at one request every 2 s; writes euroleague/raw/<season>/manifest.json.",
-    )
-    euroleague_fetch.add_argument(
-        "--season",
-        action="append",
-        required=True,
-        help="Season code, e.g. E2025; repeat the flag for several.",
-    )
-    euroleague_fetch.add_argument(
-        "--data-dir", type=Path, default=data_root(), help="Data root (default: data)."
-    )
-    euroleague_fetch.set_defaults(func=_cmd_euroleague_fetch)
-
-    euroleague_publish = euroleague_sub.add_parser(
-        "publish",
-        help="Write the aggregates of the downloaded games to <out>/euroleague/: league.json "
-        "and teams/<CODE>.json (hexagons of 1.0 m with k = 5, players with 100 shots or more, "
-        "the attempt mix by season), expected-points.json (lesson 12: counts by zone class) and "
-        "runs.json (the biggest runs and comebacks, and a summary by team); never a shot.",
-    )
-    euroleague_publish.add_argument(
-        "--season",
-        action="append",
-        default=None,
-        help="Season code; repeat for several (default: E2025 and E2026).",
-    )
-    euroleague_publish.add_argument(
-        "--data-dir", type=Path, default=data_root(), help="Data root (default: data)."
-    )
-    euroleague_publish.add_argument(
-        "--out-dir",
-        type=Path,
-        default=Path("../web/public/data"),
-        help="Where euroleague/ goes (default: ../web/public/data).",
-    )
-    euroleague_publish.add_argument(
-        "--check",
-        action="store_true",
-        help="Recompute in memory and compare with the files on disk; write nothing. PARTIAL "
-        "without downloaded data.",
-    )
-    euroleague_publish.set_defaults(func=_cmd_euroleague_publish)
-
-    euroleague_sweep = euroleague_sub.add_parser(
-        "sweep",
-        help="After `next build`: look for the UTC of 200 real shots (fixed seed) in web/.next, "
-        "web/public and every *.map; one hit fails, and so do browser source maps in "
-        "next.config.ts. PARTIAL without downloaded data or without web/.next.",
-    )
-    euroleague_sweep.add_argument(
-        "--season",
-        action="append",
-        default=None,
-        help="Season code; repeat for several (default: E2025 and E2026).",
-    )
-    euroleague_sweep.add_argument(
-        "--data-dir", type=Path, default=data_root(), help="Data root (default: data)."
-    )
-    euroleague_sweep.add_argument(
-        "--web-dir", type=Path, default=Path("../web"), help="The web app (default: ../web)."
-    )
-    # Always a check: under TRACKLAB_REQUIRE_FULL its PARTIAL fails, like every --check.
-    euroleague_sweep.set_defaults(func=_cmd_euroleague_sweep, check=True)
 
     return parser
 

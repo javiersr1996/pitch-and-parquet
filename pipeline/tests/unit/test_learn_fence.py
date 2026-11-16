@@ -23,8 +23,8 @@ Python of `learn/` and `sqlcourse/`, the `probe_learn_*.py` scripts and the code
 components, app). It does not protect the other publications, which carry held-out matches by
 design, because they publish every match of the two bundles: the possession replays
 (`possessions/fb_possession_1899585_123.json`, `_1927964_41.json` and `_1953632_69.json` are
-held-out matches; `index.json` names them), `stats.json`, `quality.json`, `runs.json` and
-`platform.json` (each holds all ten ids), nor the Parquet of the warehouse, which this test never
+held-out matches; `index.json` names them), `stats.json`, `quality.json` and `platform.json`
+(each holds all ten ids), nor the Parquet of the warehouse, which this test never
 opens. `held_out()` is applied only by `learn/possession.py`. Widening the fence to every public
 file is a separate decision, not a gap of this test.
 

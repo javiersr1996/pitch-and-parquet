@@ -68,18 +68,6 @@ function WarehousePreview() {
   );
 }
 
-function RunsPreview() {
-  return (
-    <svg viewBox={VIEW} className="pv pv-runs">
-      <line x1="14" y1="36" x2="108" y2="36" className="pv-run" />
-      <circle cx="60" cy="20" r="3.5" className="pv-alt" />
-      <circle cx="78" cy="48" r="3.5" className="pv-alt" />
-      <circle cx="96" cy="30" r="3.5" className="pv-alt" />
-      <circle cx="14" cy="36" r="3.5" className="pv-ink pv-runner" />
-    </svg>
-  );
-}
-
 function PosePreview() {
   return (
     <svg viewBox={VIEW} className="pv pv-pose">
@@ -126,35 +114,6 @@ function SqlPreview() {
         />
       ))}
       <rect x="60" y="54" width="5" height="7" className="pv-cursor" />
-    </svg>
-  );
-}
-
-// A half court seen from above, hoop at the foot, and a few hexagons lighting up in turn: a sketch
-// of the atlas, not its data (the cells and their tones here are drawn, not read).
-function EuroleaguePreview() {
-  const hexes = [
-    { x: 60, y: 58, r: 6, tone: "pv-hex-hi" },
-    { x: 49, y: 52, r: 4.5, tone: "pv-hex-mid" },
-    { x: 71, y: 52, r: 4.5, tone: "pv-hex-lo" },
-    { x: 32, y: 34, r: 5, tone: "pv-hex-hi" },
-    { x: 88, y: 34, r: 5, tone: "pv-hex-mid" },
-    { x: 60, y: 22, r: 5.5, tone: "pv-hex-hi" },
-    { x: 44, y: 26, r: 3.5, tone: "pv-hex-lo" },
-    { x: 76, y: 26, r: 3.5, tone: "pv-hex-hi" },
-  ];
-  const corner = (x: number, y: number, r: number) =>
-    [-90, -30, 30, 90, 150, 210]
-      .map((d) => `${(x + r * Math.cos((d * Math.PI) / 180)).toFixed(1)},${(y + r * Math.sin((d * Math.PI) / 180)).toFixed(1)}`)
-      .join(" ");
-  return (
-    <svg viewBox={VIEW} className="pv pv-euroleague">
-      <rect x="10" y="4" width="100" height="64" className="pv-line" />
-      <path d="M 18 68 V 58 A 42 42 0 0 1 102 58 V 68" className="pv-line" />
-      <rect x="47" y="44" width="26" height="24" className="pv-line" />
-      {hexes.map((h, k) => (
-        <polygon key={k} points={corner(h.x, h.y, h.r)} className={`pv-hex ${h.tone}`} style={nth(k)} />
-      ))}
     </svg>
   );
 }
@@ -254,11 +213,9 @@ const PREVIEWS: Record<string, () => React.JSX.Element> = {
   "/engineering": PlatformPreview,
   "/engineering/quality": QualityPreview,
   "/warehouse": WarehousePreview,
-  "/tracking/runs": RunsPreview,
   "/tracking/pose": PosePreview,
   "/learn": LearnPreview,
   "/sql": SqlPreview,
-  "/euroleague": EuroleaguePreview,
   "/tracking/occupancy": OccupancyPreview,
   "/warehouse/positions": PositionsPreview,
   "/warehouse/scouting": ScoutingPreview,

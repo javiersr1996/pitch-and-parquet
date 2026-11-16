@@ -6,7 +6,6 @@ import { expect, type Page, test } from "@playwright/test";
 
 const PAGES = [
   "/tracking/pose",
-  "/tracking/runs",
   "/tracking/replay",
   "/engineering",
   "/engineering/quality",
@@ -18,11 +17,10 @@ const PAGES = [
   "/tracking/occupancy",
 ];
 
-// Waits for what the page fetches before it writes its head (pose, runs).
+// Waits for what the page fetches before it writes its head (pose).
 async function settle(page: Page, path: string) {
   await page.goto(path);
   if (path === "/tracking/pose") await expect(page.locator("[data-section=status]")).toBeVisible();
-  if (path === "/tracking/runs") await expect(page.locator("main.runs")).toHaveAttribute("data-loaded", "true");
 }
 
 for (const path of PAGES) {
@@ -40,11 +38,10 @@ for (const path of PAGES) {
   });
 }
 
-// Codes a visitor would not know. Where one stays, the page prints its meaning beside it: the runs
-// stage table (each code with its plain name) and its status line. The home's runs card names the
-// stage without its code since P24, so it is checked like the rest.
+// Codes a visitor would not know. Where one stays, the page prints its meaning beside it: the pose
+// page's status line.
 const CODES = /\bP\d{1,2}\b|\bM\d[ab]?\b|\btask \d+|\bdecision \d|\bCP\d*\b/g;
-const PAIRED = ["tr[data-stage]", "[data-status]"];
+const PAIRED = ["[data-status]"];
 
 // The bulletin is docs/bulletin.md as the pipeline writes it, outside this app: not checked here.
 for (const path of ["/", ...PAGES.filter((p) => p !== "/engineering/bulletin")]) {
@@ -58,15 +55,6 @@ for (const path of ["/", ...PAGES.filter((p) => p !== "/engineering/bulletin")])
     expect(text.match(CODES) ?? [], path).toEqual([]);
   });
 }
-
-test("the runs stage table names each stage beside its code", async ({ page }) => {
-  await settle(page, "/tracking/runs");
-  const cells = await page.locator("tr[data-stage] td:first-child").evaluateAll((tds) =>
-    tds.map((td) => [td.closest("tr")!.getAttribute("data-stage"), td.querySelector(".runs-stage-name")?.textContent ?? ""]),
-  );
-  expect(cells.map(([stage]) => stage)).toEqual(["M1", "M2", "M3", "M4", "M5a", "M5b"]);
-  for (const [stage, name] of cells) expect((name ?? "").trim().length, `${stage} has a name`).toBeGreaterThan(5);
-});
 
 test("the replay's possession picker reads as words, with the id as its value", async ({ page }) => {
   await page.goto("/tracking/replay?p=bb_possessions_possession-114243-3-79.json");

@@ -4,7 +4,6 @@ import { describe, expect, it } from "vitest";
 import { MARKS } from "../components/learn/coordinates/FrameFigure";
 import { EXTERNAL_EDGE, SCHEMA_COLOR } from "../components/platform/Lineage";
 import { BASE_COLOR, DATA_COLOR, REAL_COLOR, TRACE_ALPHA } from "../components/quality/Hook";
-import { MARKER_COLOR, OTHER_COLOR } from "../components/runs/Hook";
 import { RING_COLOR } from "../lib/pose/render";
 import { COLORS, DIM_ALPHA } from "../lib/replay/render";
 
@@ -19,7 +18,6 @@ import { COLORS, DIM_ALPHA } from "../lib/replay/render";
 // - The lineage nodes' resting opacity back at 0.8: "marks drawn in TS" fails (frozen's label 4.23:1).
 // - `COLORS.ball` back at #f5c518: "the tokens they name" fails on the replay's ball.
 // - `--neon-band` back at #0b1220: "the alternate band reads as a band" fails (1.08:1).
-// - `--el-down: #8a2a5c`: "the shot atlas of /euroleague" fails (2.5:1 on the canvas).
 // - `--pct-1: #0d6e86`: "the scouting table's percentile steps" fails (2.80:1 on the band).
 
 const css = readFileSync(join(process.cwd(), "app", "globals.css"), "utf-8").replace(/\/\*[\s\S]*?\*\//g, "");
@@ -134,8 +132,6 @@ describe("the colour tokens", () => {
       ["quality DATA_COLOR", DATA_COLOR, "--neon"],
       ["quality REAL_COLOR", REAL_COLOR, "--neon-alt"],
       ["quality BASE_COLOR", BASE_COLOR, "--canvas-axis"],
-      ["runs MARKER_COLOR", MARKER_COLOR, "--canvas-hi"],
-      ["runs OTHER_COLOR", OTHER_COLOR, "--neon-ink"],
       ["lineage code", SCHEMA_COLOR.code, "--neon"],
       ["lineage frozen", SCHEMA_COLOR.frozen, "--neon-alt"],
       ["lineage none", SCHEMA_COLOR.none, "--neon-muted"],
@@ -155,7 +151,6 @@ describe("the colour tokens", () => {
       measure("quality data's path", at(DATA_COLOR, TRACE_ALPHA), canvas, 3),
       measure("quality standard's path", at(REAL_COLOR, TRACE_ALPHA), canvas, 3),
       measure("quality baseline", hex(BASE_COLOR), canvas, 3),
-      measure("runs other arrows", hex(OTHER_COLOR), canvas, 3),
     ];
     // A lineage node at its resting opacity (globals.css) and its dark label on it.
     const rest = Number(css.match(/:not\(\[data-lit\]\) rect\s*\{\s*opacity:\s*([\d.]+)/)?.[1]);
@@ -174,22 +169,6 @@ describe("the colour tokens", () => {
       pairs.push(measure(`ball edge on the ${team} disc`, hex(COLORS.ballEdge!), hex(COLORS[team]), 3));
     }
     pairs.push(measure("ball against its edge", hex(COLORS.ball), hex(COLORS.ballEdge!), 3));
-    expect(low(pairs)).toEqual([]);
-  });
-
-  it("the shot atlas of /euroleague: its tones, its court and its bars (task 116)", () => {
-    const canvas = resolve(page, "--canvas");
-    const tones = ["--el-hi", "--el-up", "--el-mid", "--el-down", "--el-lo"];
-    const pairs = tones.map((t) => measure(`hexagon ${t} on --canvas`, resolve(page, t), canvas, 3));
-    // The legend's swatches sit on the dark band, not on the canvas.
-    for (const t of tones) pairs.push(measure(`swatch ${t} on the band`, resolve(band, t), resolve(band, "--bg"), 3));
-    pairs.push(measure("the court's lines (--neon-line-strong on --canvas)", resolve(page, "--neon-line-strong"), canvas, 3));
-    pairs.push(measure("the active hexagon's edge (--canvas-hi) on --canvas", resolve(page, "--canvas-hi"), canvas, 3));
-    // The strip's bars sit in a team card on the page; each share is printed on its own segment.
-    for (const seg of ["--canvas-hi", "--canvas-muted", "--neon"]) {
-      pairs.push(measure(`bar ${seg} on a page card`, resolve(page, seg), resolve(page, "--raised"), 3));
-      pairs.push(measure(`--canvas-ink on the bar ${seg}`, resolve(page, "--canvas-ink"), resolve(page, seg), 4.5));
-    }
     expect(low(pairs)).toEqual([]);
   });
 

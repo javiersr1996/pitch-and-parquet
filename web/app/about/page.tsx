@@ -112,13 +112,10 @@ export default function AboutPage() {
           <h2 id="disclaimer-title">Disclaimer</h2>
           <p>
             Pitch & Parquet is a personal, non-commercial project built for learning. It is not affiliated with, endorsed
-            by or sponsored by SkillCorner, EuroLeague Basketball or any league, club or player named on this site.
+            by or sponsored by SkillCorner or any league, club or player named on this site.
             All trademarks, names and data belong to their respective owners.
           </p>
-          <p>
-            SkillCorner&apos;s open data is used under its MIT license; of EuroLeague game data only aggregates are
-            shown.
-          </p>
+          <p>SkillCorner&apos;s open data is used under its MIT license.</p>
           <p>
             The figures here are produced for educational purposes, may contain errors, and are not professional
             advice nor an assessment of any player or team.

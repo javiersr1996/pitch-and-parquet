@@ -58,7 +58,7 @@ async function watch(page: Page) {
 
 async function routes(page: Page): Promise<string[]> {
   const xml = await (await page.request.get("/sitemap.xml")).text();
-  return [...xml.matchAll(/<loc>https?:\/\/[^/]+(\/[^<]*)<\/loc>/g)].map((m) => m[1]).concat("/tracking/replay", "/tracking/runs", "/tracking/pose");
+  return [...xml.matchAll(/<loc>https?:\/\/[^/]+(\/[^<]*)<\/loc>/g)].map((m) => m[1]).concat("/tracking/replay", "/tracking/pose");
 }
 
 test("the policy is sent as Report-Only, with the enforced frame-ancestors beside it", async ({ request }) => {

@@ -5,7 +5,7 @@ import { BUILT, EXPLORE, inEntry, isCurrent, NAV, pageOf, SECTIONS } from "../li
 
 describe("the series", () => {
   it("numbers its lessons in order with no gap (P9 renumbers after the lesson Javier dropped)", () => {
-    expect(LESSONS.map((l) => l.n)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    expect(LESSONS.map((l) => l.n)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
     expect(new Set(LESSONS.map((l) => l.slug)).size).toBe(LESSONS.length);
   });
 
@@ -37,9 +37,9 @@ describe("isCurrent", () => {
     expect(isCurrent("/", "/learn")).toBe(false);
   });
 
-  it("keeps Learn, SQL (P12) and EuroLeague (P14) last; P23 adds scouting, positions and occupancy", () => {
-    expect(SECTIONS).toHaveLength(12);
-    expect(SECTIONS.map((s) => s.href).slice(-3)).toEqual(["/learn", "/sql", "/euroleague"]);
+  it("keeps Learn and SQL (P12) last; P23 adds scouting, positions and occupancy", () => {
+    expect(SECTIONS).toHaveLength(10);
+    expect(SECTIONS.map((s) => s.href).slice(-2)).toEqual(["/learn", "/sql"]);
     expect(SECTIONS.map((s) => s.href)).toEqual(expect.arrayContaining(["/warehouse/scouting", "/warehouse/positions", "/tracking/occupancy"]));
   });
 
@@ -49,7 +49,7 @@ describe("isCurrent", () => {
     expect([...home].sort()).toEqual(SECTIONS.map((s) => s.href).sort());
   });
 
-  it("gives the header its entries (P15; P21: SQL under Learn) and About (P20), each group current on its pages and every section but /euroleague in the menu", () => {
+  it("gives the header its entries (P15; P21: SQL under Learn) and About (P20), each group current on its pages and every section in the menu", () => {
     expect(NAV.map((n) => n.nav)).toEqual(["Tracking", "Engineering", "Warehouse", "Learn", "About"]);
     for (const n of NAV) for (const p of n.pages ?? []) expect(inEntry(p.href, n), p.href).toBe(true);
     const learn = NAV.find((n) => n.nav === "Learn")!;
@@ -63,7 +63,6 @@ describe("isCurrent", () => {
     expect(pageOf("/engineering", engineering.pages!)?.nav).toBe("Platform");
     expect(pageOf("/tracking", NAV[0].pages!)).toBeUndefined();
     const reachable = NAV.flatMap((n) => [n.href, ...(n.pages ?? []).map((p) => p.href)]);
-    // /euroleague is the one section off the menu (P27): the home and a lesson lead to it.
-    for (const s of SECTIONS) expect(reachable.includes(s.href), s.href).toBe(s.href !== "/euroleague");
+    for (const s of SECTIONS) expect(reachable.includes(s.href), s.href).toBe(true);
   });
 });

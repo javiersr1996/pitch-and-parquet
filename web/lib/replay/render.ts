@@ -50,7 +50,7 @@ export const NEON_COLORS: Palette = {
   ballEdge: null,
 };
 
-// The player of `/tracking/replay` and `/tracking/runs`: the hero's neon markings (drawn with its
+// The player of `/tracking/replay`: the hero's neon markings (drawn with its
 // glow), and P13's marks, whose undetected numbers and ball edge keep their contrast on a canvas
 // that is read closely, not glanced at.
 export const PLAYER_COLORS: Palette = { ...COLORS, surface: NEON_COLORS.surface };

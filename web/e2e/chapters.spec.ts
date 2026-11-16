@@ -9,7 +9,6 @@ const PAGES = [
   ...LESSONS.filter((l) => l.status === "published").map(lessonHref),
   "/engineering",
   "/engineering/history",
-  "/euroleague",
   "/tracking/pose",
 ];
 const PHONE = { width: 390, height: 844 };
@@ -69,7 +68,7 @@ test.describe("on a phone", () => {
   });
 
   test("the strip stays at the top while the page scrolls", async ({ page }) => {
-    for (const route of ["/learn/clock", "/engineering", "/euroleague", "/tracking/pose", "/engineering/history"]) {
+    for (const route of ["/learn/clock", "/engineering", "/tracking/pose", "/engineering/history"]) {
       await open(page, route);
       await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight / 2));
       const box = (await page.locator(".chapters").boundingBox())!;
@@ -152,7 +151,7 @@ test("on a desktop at 1440 px the strip sits above the content, one line high", 
 
 test("where the wrap leaves room, a rail in the left margin, clear of the content", async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 1080 });
-  for (const route of ["/learn/facing", "/engineering", "/euroleague"]) {
+  for (const route of ["/learn/facing", "/engineering", "/tracking/pose"]) {
     await open(page, route);
     await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight / 2));
     const rail = (await page.locator(".chapters ol").boundingBox())!;
@@ -180,7 +179,7 @@ test("on a tall screen the last chapter is current at the foot of the page, and 
     for (const [route, last] of [
       ["/learn/gravity", "Further reading"],
       ["/engineering/history", "Freshness"],
-      ["/euroleague", "The data"],
+      ["/tracking/pose", "The protocol, in the order it was written"],
     ]) {
       await open(page, route);
       await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));

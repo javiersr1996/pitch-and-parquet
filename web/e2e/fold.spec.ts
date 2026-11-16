@@ -10,7 +10,7 @@ const ROUTES = LESSONS.filter((l) => l.status === "published").map(lessonHref);
 const FOLDS = ["limitations-h", "reproduce-h", "reading-h"];
 
 test("every published lesson folds its three reference sections, closed, under headings that show", async ({ page }) => {
-  expect(ROUTES).toHaveLength(12);
+  expect(ROUTES).toHaveLength(11);
   for (const route of ROUTES) {
     await page.goto(route);
     for (const id of FOLDS) {

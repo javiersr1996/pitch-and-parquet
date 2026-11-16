@@ -1,10 +1,10 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
 import { hydrated } from "./fold";
 
-// P32, task 211: the long repeated lists outside the lessons. Tabs on /euroleague (runs, comebacks,
-// by team) and on /tracking/pose (one match at a time, twice), each opening on what came first
-// before and driven by the arrow keys; folds on /engineering and /engineering/history; Explore on
-// the home as a row that scrolls sideways on a phone and the grid on a desktop.
+// P32, task 211: the long repeated lists outside the lessons. Tabs on /tracking/pose (one match at a
+// time, twice), opening on what came first before and driven by the arrow keys; folds on
+// /engineering and /engineering/history; Explore on the home as a row that scrolls sideways on a
+// phone and the grid on a desktop.
 const PHONE = { width: 390, height: 844 };
 
 async function shown(tabs: Locator): Promise<string[]> {
@@ -38,28 +38,6 @@ async function arrows(page: Page, tabs: Locator, keys: string[]) {
   await at(0);
 }
 
-test("runs and comebacks: three tabs, the runs first, driven by the arrow keys", async ({ page }) => {
-  await page.goto("/euroleague");
-  await hydrated(page);
-  const tabs = page.locator(".el-streak-tabs");
-  await expect(tabs.getByRole("tablist", { name: "Runs and comebacks" })).toBeVisible();
-  await expect(tabs.getByRole("tab")).toHaveText(["Runs", "Comebacks", "By team"]);
-  // What came first before the tabs is what shows on load; the rest is in the HTML, hidden.
-  expect(await shown(tabs)).toEqual(["runs"]);
-  await expect(tabs.getByRole("heading", { name: "Biggest runs" })).toBeVisible();
-  await expect(page.locator('[data-ranking="comebacks"] > li').first()).toBeHidden();
-  expect(await page.locator('[data-ranking="comebacks"] > li').count()).toBeGreaterThan(0);
-  expect(await page.locator("[data-streak-team]").count()).toBeGreaterThan(0);
-  await arrows(page, tabs, ["runs", "comebacks", "teams"]);
-  // With a modifier held the key is the browser's, not the tabs'.
-  await page.keyboard.press("Control+ArrowRight");
-  await page.keyboard.press("Meta+End");
-  expect(await shown(tabs)).toEqual(["runs"]);
-  // A click selects too.
-  await tabs.getByRole("tab", { name: "By team" }).click();
-  await expect(page.locator("[data-streak-team]").first()).toBeVisible();
-});
-
 test("pose: one match at a time in both tables, the first match first, driven by the arrow keys", async ({ page }) => {
   const summary = (await (await page.request.get("/data/pose.json")).json()) as { tables: { matches: Record<string, unknown> } | null };
   test.skip(summary.tables === null, "a pose that died publishes no table");
@@ -78,6 +56,14 @@ test("pose: one match at a time in both tables, the first match first, driven by
     await expect(page.locator(`table[data-table="${table}"][data-match="${matches[0]}"]`)).toBeVisible();
     for (const m of matches.slice(1)) await expect(page.locator(`table[data-table="${table}"][data-match="${m}"]`)).toBeHidden();
     await arrows(page, tabs, matches);
+    // With a modifier held the key is the browser's, not the tabs'.
+    await page.keyboard.press("Control+ArrowRight");
+    await page.keyboard.press("Meta+End");
+    expect(await shown(tabs)).toEqual([matches[0]]);
+    // A click selects too.
+    await tabs.getByRole("tab").last().click();
+    expect(await shown(tabs)).toEqual([matches[matches.length - 1]]);
+    await expect(page.locator(`table[data-table="${table}"][data-match="${matches[matches.length - 1]}"]`)).toBeVisible();
   }
 });
 
@@ -228,5 +214,16 @@ test.describe("Explore on the home", () => {
     }));
     expect(box.scrolls).toBe(false);
     expect(box.tops).toBeGreaterThan(1);
+    // Every row is full: its last card ends at the grid's right edge, so no row leaves a hole.
+    const ends = await page.locator(".home-explore .cards").evaluate((ul) => {
+      const right = ul.getBoundingClientRect().right;
+      const rows = new Map<number, number>();
+      for (const li of ul.children) {
+        const r = li.getBoundingClientRect();
+        rows.set(Math.round(r.top), Math.max(rows.get(Math.round(r.top)) ?? 0, r.right));
+      }
+      return [...rows.values()].map((end) => Math.round(right - end));
+    });
+    expect(ends.every((gap) => gap <= 1), `gaps at the end of each row: ${ends.join(", ")}`).toBe(true);
   });
 });

@@ -11,7 +11,6 @@ from tracklab.dagster_defs.assets_ingest import manifest_sources, raw_assets
 from tracklab.dagster_defs.assets_pose import pose_assets
 from tracklab.dagster_defs.assets_publish import publish_possessions, publish_quality, publish_stats
 from tracklab.dagster_defs.assets_quality import quality_assets
-from tracklab.dagster_defs.assets_runs import runs_assets
 
 # Every asset in one run, and the one command that works on Windows too: click expands
 # a bare `--select "*"` against the working directory there.
@@ -30,7 +29,6 @@ defs = Definitions(
         publish_stats,
         *quality_assets,
         publish_quality,
-        *runs_assets,
         *pose_assets,
     ],
     jobs=[build],

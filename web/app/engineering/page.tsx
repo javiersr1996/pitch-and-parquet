@@ -7,9 +7,7 @@ import { Band, PageHead } from "../../components/site/Band";
 import { type Chapter, Chapters } from "../../components/site/Chapters";
 import { Fold } from "../../components/site/Fold";
 import { pluralize } from "../../lib/format";
-import { LEAGUE } from "../../lib/euroleague/data";
 import { firstBeforeBars, firstEvents, LINEAGE, PLATFORM, poseShare, rawSourceMeta, silverModelRows } from "../../lib/platform";
-import { EUROLEAGUE } from "../../lib/sections";
 import pgJson from "../../public/data/warehouse_pg.json";
 import { sectionMetadata } from "../../lib/page-metadata";
 import { latestContractRun, runLabel } from "../../lib/history";
@@ -139,8 +137,7 @@ export default function PlatformPage() {
       <Band>
         <h2 id="sources">Sources</h2>
         <p>
-          Two kinds of ingest. SkillCorner is a pinned commit with a sha256 per file; EuroLeague is
-          a game feed with no open license, of which only aggregates are published.
+          Each source is a pinned commit of SkillCorner&apos;s with a sha256 per file.
           The last line of each card says whether its bytes are in the <q>out</q> of the title.
         </p>
         <ul className="platform-sources" data-sources>
@@ -165,33 +162,6 @@ export default function PlatformPage() {
               </li>
             );
           })}
-          <li data-source="euroleague">
-            <h3>
-              <a href={EUROLEAGUE.href}>{EUROLEAGUE.name}</a>
-            </h3>
-            <dl>
-              <dt>ingest</dt>
-              <dd>game feed, kept out of the repository; aggregates only</dd>
-              <dt>in</dt>
-              <dd>
-                {EUROLEAGUE.what}:{" "}
-                {LEAGUE.seasons.map((s, i) => (
-                  <span key={s.season} data-season={s.season}>
-                    {i > 0 ? "; " : ""}
-                    <span data-field="games">{s.games_played}</span> games to{" "}
-                    <span data-field="cutoff">{s.cutoff}</span>
-                  </span>
-                ))}
-              </dd>
-              <dt>license</dt>
-              <dd>
-                no open license: aggregates only, at least <span data-field="k">{LEAGUE.hex.k}</span>{" "}
-                shots per hexagon
-              </dd>
-              <dt>counts in out</dt>
-              <dd data-counts-in-out="no">no (another source, another license)</dd>
-            </dl>
-          </li>
         </ul>
       </Band>
       <Band dark>

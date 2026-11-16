@@ -8,7 +8,6 @@ import { CLOCK_EXAMPLES } from "./clock-data";
 import { HOME_STEMS, possession } from "./coordinates-data";
 import { TOUCH } from "./dribble-data";
 import { ENTRY, ENTRY_SAMPLES } from "./entry-data";
-import { CLASSES, EXPECTED } from "./expected-data";
 import { circular } from "./facing";
 import { FACING } from "./facing-data";
 import { fitQuadratic, type Quadratic } from "./gravity";
@@ -285,23 +284,6 @@ function facing(): Mark[] {
   ];
 }
 
-// Lesson 12: the first season's points per shot by zone class, each bar as wide as the class's
-// share of the attempts, and the mean weighted by them across the box.
-function expectedPoints(): Mark[] {
-  const s = EXPECTED.seasons[0];
-  const total = CLASSES.reduce((sum, c) => sum + s.league[c].n, 0);
-  const Y = lin(0, Math.max(...CLASSES.map((c) => s.pps[c])), H - P, P);
-  const tones: Record<(typeof CLASSES)[number], Tone> = { rim: "ink", mid: "axis", three: "alt" };
-  let x = P;
-  const bars = CLASSES.map((c): Mark => {
-    const w = ((W - 2 * P) * s.league[c].n) / total;
-    const bar: Mark = { kind: "rect", x: r1(x), y: r1(Y(s.pps[c])), w: r1(w - 2), h: r1(H - P - Y(s.pps[c])), tone: tones[c] };
-    x += w;
-    return bar;
-  });
-  return [...bars, { kind: "stroke", d: poly([[P, Y(s.mean)], [W - P, Y(s.mean)]]), tone: "hi", dashed: true }];
-}
-
 const DRAW: Record<string, () => Mark[]> = {
   gravity,
   speed,
@@ -314,7 +296,6 @@ const DRAW: Record<string, () => Mark[]> = {
   dribble,
   possession: possessionCurve,
   facing,
-  "expected-points": expectedPoints,
 };
 
 // The marks of a lesson's drawing, or null for a lesson that has none yet.

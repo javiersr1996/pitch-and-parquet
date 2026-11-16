@@ -5,21 +5,16 @@ import { headerLinks, whole } from "./header";
 
 // P15, task 121: the information architecture. /tracking is the hub of the pages that show the
 // tracking itself (the occupancy map joined them in P23); each card opens its page.
-test("the /tracking hub lists replay, runs, pose and occupancy as cards that open them", async ({ page }) => {
+test("the /tracking hub lists replay, pose and occupancy as cards that open them", async ({ page }) => {
   await page.goto("/tracking");
   await expect(page.locator("h1")).toHaveText("Tracking");
   const cards = page.locator(".cards > li");
-  await expect(cards).toHaveCount(4);
+  await expect(cards).toHaveCount(3);
   expect(await cards.evaluateAll((els) => els.map((e) => e.getAttribute("data-section")))).toEqual([
     "/tracking/replay",
-    "/tracking/runs",
     "/tracking/pose",
     "/tracking/occupancy",
   ]);
-  await page.locator('[data-section="/tracking/runs"]').getByRole("link").click();
-  await expect(page).toHaveURL(/\/tracking\/runs$/);
-  await expect(page.locator("h1")).toHaveText("The run that moves nobody");
-  await page.goto("/tracking");
   await page.locator('[data-section="/tracking/occupancy"]').getByRole("link").click();
   await expect(page).toHaveURL(/\/tracking\/occupancy$/);
   await expect(page.locator("h1")).toHaveText("Where football positions play");
@@ -54,9 +49,7 @@ test("the home reads lessons, Explore, Findings, How it is built, and every card
     "/tracking/replay",
     "/tracking/occupancy",
     "/warehouse/positions",
-    "/euroleague",
     "/tracking/pose",
-    "/tracking/runs",
     "/warehouse",
     "/warehouse/scouting",
   ]);
@@ -153,8 +146,8 @@ for (const viewport of [
 // with the group's pages, the one on show marked current.
 const ENTRIES = ["Tracking", "Engineering", "Warehouse", "Learn", "About"];
 const GROUPS = [
-  { path: "/tracking/pose", group: "Tracking", pages: ["Replay", "Runs", "Pose", "Occupancy"], current: "Pose" },
-  { path: "/tracking/occupancy", group: "Tracking", pages: ["Replay", "Runs", "Pose", "Occupancy"], current: "Occupancy" },
+  { path: "/tracking/pose", group: "Tracking", pages: ["Replay", "Pose", "Occupancy"], current: "Pose" },
+  { path: "/tracking/occupancy", group: "Tracking", pages: ["Replay", "Pose", "Occupancy"], current: "Occupancy" },
   { path: "/engineering/quality", group: "Engineering", pages: ["Platform", "Quality", "Bulletin", "History"], current: "Quality" },
   { path: "/engineering", group: "Engineering", pages: ["Platform", "Quality", "Bulletin", "History"], current: "Platform" },
   { path: "/engineering/history", group: "Engineering", pages: ["Platform", "Quality", "Bulletin", "History"], current: "History" },
@@ -168,7 +161,7 @@ const GROUPS = [
 ];
 
 test("the header has the five entries, and a group's pages only under that group", async ({ page }) => {
-  await page.goto("/euroleague");
+  await page.goto("/");
   const nav = page.getByRole("navigation", { name: "Sections" });
   await expect(nav.getByRole("link")).toHaveText(ENTRIES);
   await expect(nav.locator("[aria-current]")).toHaveCount(0);
@@ -198,12 +191,12 @@ for (const width of [390, 1440]) {
     page,
   }) => {
     await page.setViewportSize({ width, height: 900 });
-    // The wordmark and the five, then the group's row: four under Tracking (Occupancy, task 184b)
-    // and under Engineering, three under Warehouse (Positions, task 184a), two under Learn.
+    // The wordmark and the five, then the group's row: three under Tracking, four under
+    // Engineering, three under Warehouse (Positions, task 184a), two under Learn.
     const LINKS: Record<string, number> = {
       "/": 6,
-      "/tracking/runs": 10,
-      "/tracking/occupancy": 10,
+      "/tracking/replay": 9,
+      "/tracking/occupancy": 9,
       "/engineering/bulletin": 10,
       "/engineering/history": 10,
       "/warehouse": 9,
@@ -272,7 +265,6 @@ test("at 390 px Tab walks the header's strip and each focused link is in view", 
 // list is typed here, not read from next.config.ts, so a redirect dropped there fails here.
 const MOVED: [string, string][] = [
   ["/replay", "/tracking/replay"],
-  ["/runs", "/tracking/runs"],
   ["/pose", "/tracking/pose"],
   ["/platform", "/engineering"],
   ["/quality", "/engineering/quality"],
@@ -292,6 +284,24 @@ test("each old route redirects permanently to its new home, and the new one answ
   await page.goto("/platform");
   await expect(page).toHaveURL(/\/engineering$/);
   await expect(page.getByRole("navigation", { name: "Sections" }).locator("[aria-current]")).toHaveText(["Engineering"]);
+});
+
+// Pages the site no longer has redirect, temporarily, to the closest section, which answers 200.
+// Typed here, like MOVED, so a redirect dropped from next.config.ts fails here.
+const GONE: [string, string][] = [
+  ["/runs", "/tracking"],
+  ["/tracking/runs", "/tracking"],
+  ["/euroleague", "/learn"],
+  ["/learn/expected-points", "/learn"],
+];
+
+test("each removed page redirects temporarily to its closest section, which answers 200", async ({ page }) => {
+  for (const [from, to] of GONE) {
+    const res = await page.request.get(from, { maxRedirects: 0 });
+    expect([302, 307], `${from} status`).toContain(res.status());
+    expect(new URL(res.headers()["location"], "http://x").pathname, `${from} location`).toBe(to);
+    expect((await page.request.get(to, { maxRedirects: 0 })).status(), `${to} status`).toBe(200);
+  }
 });
 
 // The bulletin under /engineering renders its Markdown (it printed `## Detection` as written): a
@@ -325,7 +335,7 @@ test("the bulletin's sections are headings, its code is code and its source a li
 // The limit goes to 730 px, still under the 750 of that layout.
 test("the footer is short at 390 px on every layout and keeps its notices", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
-  for (const route of ["/", "/tracking/runs", "/sql", "/learn", "/engineering", "/euroleague"]) {
+  for (const route of ["/", "/tracking/pose", "/sql", "/learn", "/engineering", "/warehouse"]) {
     await page.goto(route);
     const footer = page.locator("footer.site-footer");
     const box = await footer.boundingBox();
@@ -333,7 +343,6 @@ test("the footer is short at 390 px on every layout and keeps its notices", asyn
     const labels = footer.locator(".site-footer-label", { hasText: /^code$/ });
     await expect(labels, route).toBeVisible();
     await expect(footer).toContainText("Not affiliated with SkillCorner.");
-    await expect(footer).toContainText("Not affiliated with EuroLeague.");
     await expect(footer.getByRole("link", { name: "Code on GitHub, MIT license" })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth), route).toBe(390);
   }

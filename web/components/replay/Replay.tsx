@@ -2,14 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { type PointerEvent, useEffect, useRef, useState } from "react";
-import {
-  formatClock,
-  type Rate,
-  ReplayEngine,
-  type Snapshot,
-  speedOf,
-} from "../../lib/replay/engine";
-import { drawFrame, NEON_COLORS, PLAYER_COLORS, type View, viewed, viewOf } from "../../lib/replay/render";
+import { formatClock, type Rate, ReplayEngine, speedOf } from "../../lib/replay/engine";
+import { drawFrame, NEON_COLORS, PLAYER_COLORS, viewed, viewOf } from "../../lib/replay/render";
 import type { Possession } from "../../lib/replay/types";
 
 // Playwright reads the player's state from here; a production build leaves it out.
@@ -25,22 +19,15 @@ interface ReplayState {
   normalized: boolean;
   // Venue metres; in the hero, also where the mark sits on the canvas, in CSS px.
   entities: { i: number; x: number; y: number; px?: number; py?: number }[];
-  overlay: number;
-  // Trail samples drawn behind an entity this frame: 0 without trails (reduced motion, /tracking/runs).
+  // Trail samples drawn behind an entity this frame: 0 without trails (reduced motion).
   trail: number;
 }
 
 declare global {
   interface Window {
     __replay?: ReplayState;
-    // Players that share a page (`/tracking/runs`), each under its `name`.
-    __replays?: Record<string, ReplayState>;
   }
 }
-
-// Drawn on top of each frame, after the players; returns how many marks it drew. `scale` is the
-// canvas's pixels per CSS pixel of a 960 px drawing, which an overlay's widths and radii follow.
-export type Overlay = (ctx: CanvasRenderingContext2D, view: View, snapshot: Snapshot, scale: number) => number;
 
 const RATES: Rate[] = [0.5, 1, 2];
 
@@ -62,8 +49,6 @@ interface Props {
   possession: Possession;
   autoplay?: boolean;
   onEnded?: () => void;
-  overlay?: Overlay;
-  name?: string;
   // The home's hero (P12): the canvas fills its box and turns the pitch upright on a portrait
   // screen, in the neon colours; the controls shrink to the pause button and a readout. Without
   // it, P1's player and its controls, drawn with the same neon markings and glow.
@@ -79,8 +64,6 @@ export function Replay({
   possession,
   autoplay = false,
   onEnded,
-  overlay,
-  name,
   hero = false,
   trailMs = 0,
   href,
@@ -186,7 +169,6 @@ export function Replay({
             if (speedOut.current) speedOut.current.textContent = v === null ? "– m/s" : `${v.toFixed(1)} m/s`;
           }
         }
-        const marks = overlay ? overlay(ctx, view, snapshot, markScale) : 0;
         exposed = {
           state: engine.state,
           t: engine.t,
@@ -199,7 +181,6 @@ export function Replay({
             const [px, py] = toCss(x, y);
             return { i, x, y, px, py };
           }),
-          overlay: marks,
           trail: trailed,
         };
         drawnT = engine.t;
@@ -211,7 +192,6 @@ export function Replay({
       if (EXPOSE && exposed) {
         exposed = { ...exposed, state: engine.state, rate: engine.rate };
         window.__replay = exposed;
-        if (name) window.__replays = { ...window.__replays, [name]: exposed };
       }
       // Every frame while playing, and once more on the tick that ends it.
       if (engine.state === "playing" || engine.state !== shown) setVersion((v) => v + 1);
@@ -243,7 +223,7 @@ export function Replay({
       observer?.disconnect();
       seen?.disconnect();
     };
-  }, [engine, possession, normalized, onEnded, overlay, name, hero, trailMs]);
+  }, [engine, possession, normalized, onEnded, hero, trailMs]);
 
   // The player whose mark is nearest the pointer, within HIT_PX, at this instant.
   const nearestPlayer = (e: PointerEvent<HTMLCanvasElement>): number | null => {

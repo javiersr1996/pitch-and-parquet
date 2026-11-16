@@ -5967,6 +5967,493 @@
      "duration_seconds": 244.702
     }
    }
+  },
+  {
+   "id": "20261116T153048Z_09dc7d7",
+   "record_version": 2,
+   "sha": "09dc7d7c573eff88fee8e9841b4eaa640a0ab401",
+   "select": null,
+   "started_utc": "2026-11-16T15:30:48+00:00",
+   "finished_utc": "2026-11-16T16:15:37+00:00",
+   "wall_seconds": 2688.957,
+   "steps": [
+    {
+     "step_key": "raw_basketball",
+     "group": "ingest",
+     "status": "success",
+     "duration_ms": 1733.6230999935651,
+     "started_utc": "2026-11-16T15:30:54.777+00:00",
+     "finished_utc": "2026-11-16T15:31:08.276+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "raw_football",
+     "group": "ingest",
+     "status": "success",
+     "duration_ms": 8532.95400000934,
+     "started_utc": "2026-11-16T15:30:54.794+00:00",
+     "finished_utc": "2026-11-16T15:31:15.108+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "raw_football_bodypose",
+     "group": "ingest",
+     "status": "success",
+     "duration_ms": 5662.540899997111,
+     "started_utc": "2026-11-16T15:30:54.811+00:00",
+     "finished_utc": "2026-11-16T15:31:12.265+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "bronze_basketball_aggregates",
+     "group": "bronze",
+     "status": "success",
+     "duration_ms": 5379.018000006909,
+     "started_utc": "2026-11-16T15:30:53.421+00:00",
+     "finished_utc": "2026-11-16T15:31:30.322+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "bronze_basketball_events",
+     "group": "bronze",
+     "status": "success",
+     "duration_ms": 21308.996500010835,
+     "started_utc": "2026-11-16T15:30:53.663+00:00",
+     "finished_utc": "2026-11-16T15:31:46.130+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "bronze_basketball_meta",
+     "group": "bronze",
+     "status": "success",
+     "duration_ms": 1184.2866000079084,
+     "started_utc": "2026-11-16T15:30:53.967+00:00",
+     "finished_utc": "2026-11-16T15:31:26.081+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "bronze_basketball_tracking",
+     "group": "bronze",
+     "status": "success",
+     "duration_ms": 110447.08460000402,
+     "started_utc": "2026-11-16T15:30:54.036+00:00",
+     "finished_utc": "2026-11-16T15:33:15.321+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "bronze_football_bodypose",
+     "group": "bronze",
+     "status": "success",
+     "duration_ms": 371513.9247000043,
+     "started_utc": "2026-11-16T15:30:54.164+00:00",
+     "finished_utc": "2026-11-16T15:37:39.226+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "bronze_football_aggregates",
+     "group": "bronze",
+     "status": "success",
+     "duration_ms": 1853.9302999997744,
+     "started_utc": "2026-11-16T15:30:54.106+00:00",
+     "finished_utc": "2026-11-16T15:31:33.173+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "bronze_football_events",
+     "group": "bronze",
+     "status": "success",
+     "duration_ms": 25791.925399986212,
+     "started_utc": "2026-11-16T15:30:54.200+00:00",
+     "finished_utc": "2026-11-16T15:31:57.295+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "bronze_football_meta",
+     "group": "bronze",
+     "status": "success",
+     "duration_ms": 2475.031599999056,
+     "started_utc": "2026-11-16T15:30:54.218+00:00",
+     "finished_utc": "2026-11-16T15:31:34.105+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "bronze_football_tracking",
+     "group": "bronze",
+     "status": "success",
+     "duration_ms": 84618.35469999642,
+     "started_utc": "2026-11-16T15:30:54.302+00:00",
+     "finished_utc": "2026-11-16T15:32:56.330+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "gold",
+     "group": "gold",
+     "status": "success",
+     "duration_ms": 27514.98459999857,
+     "started_utc": "2026-11-16T15:30:54.334+00:00",
+     "finished_utc": "2026-11-16T15:32:14.775+00:00",
+     "dbt": {
+      "tests": {
+       "pass": 49,
+       "fail": 0,
+       "warn": 0,
+       "error": 0,
+       "skipped": 0
+      },
+      "nodes": {
+       "success": 10,
+       "error": 0,
+       "skipped": 0
+      },
+      "elapsed_seconds": 5.416
+     },
+     "incremental": {
+      "mode": "full",
+      "reason": "gold inputs changed: dbt"
+     },
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "orientation",
+     "group": "bronze",
+     "status": "success",
+     "duration_ms": 6846.084600008908,
+     "started_utc": "2026-11-16T15:30:54.089+00:00",
+     "finished_utc": "2026-11-16T15:33:30.073+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "quality_clock",
+     "group": "quality",
+     "status": "success",
+     "duration_ms": 28851.21569999319,
+     "started_utc": "2026-11-16T15:30:54.667+00:00",
+     "finished_utc": "2026-11-16T15:33:51.926+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "quality_partitions",
+     "group": "quality",
+     "status": "success",
+     "duration_ms": 352.0132999983616,
+     "started_utc": "2026-11-16T15:30:54.760+00:00",
+     "finished_utc": "2026-11-16T15:33:39.837+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "silver",
+     "group": "silver",
+     "status": "success",
+     "duration_ms": 130478.86279999511,
+     "started_utc": "2026-11-16T15:30:54.864+00:00",
+     "finished_utc": "2026-11-16T15:35:50.147+00:00",
+     "dbt": {
+      "tests": {
+       "pass": 125,
+       "fail": 0,
+       "warn": 0,
+       "error": 0,
+       "skipped": 0
+      },
+      "nodes": {
+       "success": 12,
+       "error": 0,
+       "skipped": 0
+      },
+      "elapsed_seconds": 108.444
+     },
+     "incremental": {
+      "mode": "full",
+      "reason": "every match changed (a global input changed: engine, dbt project, plugin or an input no sport owns)"
+     },
+     "partitions": {
+      "written": 30,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "publish_possessions",
+     "group": "publish",
+     "status": "success",
+     "duration_ms": 8740.240799990715,
+     "started_utc": "2026-11-16T15:30:54.608+00:00",
+     "finished_utc": "2026-11-16T15:36:09.439+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "quality_detection",
+     "group": "quality",
+     "status": "success",
+     "duration_ms": 1426.6487999993842,
+     "started_utc": "2026-11-16T15:30:54.687+00:00",
+     "finished_utc": "2026-11-16T15:36:02.176+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "quality_entry_angle",
+     "group": "quality",
+     "status": "success",
+     "duration_ms": 14038.215300010052,
+     "started_utc": "2026-11-16T15:30:54.707+00:00",
+     "finished_utc": "2026-11-16T15:36:14.803+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "quality_gravity",
+     "group": "quality",
+     "status": "success",
+     "duration_ms": 14600.835099990945,
+     "started_utc": "2026-11-16T15:30:54.726+00:00",
+     "finished_utc": "2026-11-16T15:36:15.380+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "quality_noise",
+     "group": "quality",
+     "status": "success",
+     "duration_ms": 151913.2663000055,
+     "started_utc": "2026-11-16T15:30:54.743+00:00",
+     "finished_utc": "2026-11-16T15:38:32.842+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "publish_stats",
+     "group": "publish",
+     "status": "success",
+     "duration_ms": 420.6772000034107,
+     "started_utc": "2026-11-16T15:30:54.649+00:00",
+     "finished_utc": "2026-11-16T15:36:23.319+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "pose_coverage",
+     "group": "pose",
+     "status": "success",
+     "duration_ms": 27614.669300004607,
+     "started_utc": "2026-11-16T15:30:54.525+00:00",
+     "finished_utc": "2026-11-16T15:38:16.816+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "pose_protocol",
+     "group": "pose",
+     "status": "success",
+     "duration_ms": 1009.5065000059549,
+     "started_utc": "2026-11-16T15:30:54.562+00:00",
+     "finished_utc": "2026-11-16T15:38:29.644+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "pose_metric",
+     "group": "pose",
+     "status": "success",
+     "duration_ms": 1624074.4985999917,
+     "started_utc": "2026-11-16T15:30:54.545+00:00",
+     "finished_utc": "2026-11-16T16:05:44.706+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "publish_quality",
+     "group": "publish",
+     "status": "success",
+     "duration_ms": 7627.8759999986505,
+     "started_utc": "2026-11-16T15:30:54.629+00:00",
+     "finished_utc": "2026-11-16T15:38:49.803+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    },
+    {
+     "step_key": "publish_pose",
+     "group": "pose",
+     "status": "success",
+     "duration_ms": 72938.18349999492,
+     "started_utc": "2026-11-16T15:30:54.582+00:00",
+     "finished_utc": "2026-11-16T16:07:18.891+00:00",
+     "dbt": null,
+     "incremental": null,
+     "partitions": {
+      "written": 0,
+      "skipped": 0,
+      "deleted": 0
+     }
+    }
+   ],
+   "quality": {
+    "dbt": {
+     "tests": {
+      "pass": 174,
+      "fail": 0,
+      "warn": 0,
+      "error": 0,
+      "skipped": 0
+     },
+     "source": "record"
+    },
+    "contracts": {
+     "files": 15,
+     "executed": true,
+     "status": "passed",
+     "passed": 104,
+     "failed": 0,
+     "skipped": 0,
+     "errors": 0,
+     "duration_seconds": 495.226
+    }
+   }
   }
  ]
 }

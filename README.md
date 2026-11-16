@@ -4,11 +4,11 @@
 
 > **Personal learning project** by Javier Sánchez Rueda
 > ([LinkedIn](https://www.linkedin.com/in/javier-sanchez-rueda/)). Pitch & Parquet is non-commercial and
-> built for learning; it is not affiliated with, endorsed by or sponsored by SkillCorner, EuroLeague
-> Basketball or any league, club or player it names, and all trademarks, names and data belong to
-> their owners. SkillCorner's open data is used under its MIT license, of EuroLeague game data only
-> aggregates are shown, and the figures may contain errors and are not an assessment of any player
-> or team. The full disclaimer is at [/about](https://pitchandparquet.vercel.app/about).
+> built for learning; it is not affiliated with, endorsed by or sponsored by SkillCorner or any
+> league, club or player it names, and all trademarks, names and data belong to their owners.
+> SkillCorner's open data is used under its MIT license, and the figures may contain errors and are
+> not an assessment of any player or team. The full disclaimer is at
+> [/about](https://pitchandparquet.vercel.app/about).
 
 Watch a possession, then ask it a question: replay football and basketball tracking data, follow
 lessons that each start from one question, and run SQL on the season statistics, all in your
@@ -78,8 +78,8 @@ The pipeline is a Dagster graph (`uv run dagster asset list -m tracklab.dagster_
 `raw_<sport>`, `bronze_<sport>_<table>` (one step per `tracklab bronze --tables` group),
 `bronze_common_orientation` and the `reports_orientation_<sport>` CSVs it writes, the dbt seeds
 and silver models and the season-aggregate gold models (group `gold`), whose dbt tests run as asset checks, and `publish_possessions` and
-`publish_stats` (group `publish`), the five assets of [P5](#the-run-that-moves-nobody) (group
-`runs`) and the four of [P6](#body-pose) (group `pose`). The job `build` runs all of them. From `pipeline/`:
+`publish_stats` (group `publish`), and the four assets of [P6](#body-pose) (group `pose`). The job
+`build` runs all of them. From `pipeline/`:
 
 ```
 uv run dbt parse --project-dir dbt --profiles-dir dbt          # dagster-dbt reads target/manifest.json
@@ -104,48 +104,12 @@ describe them (`lineage.json` and `platform.json` excluded, as they describe the
 than its data).
 
 ```
-title: 3.6 GB in, 9.6 MB out
-subtitle: 7.6 MB to watch, 2.1 MB to query
+title: 3.6 GB in, 9.4 MB out
+subtitle: 7.3 MB to watch, 2.1 MB to query
 ```
 
-`uv run dagster asset list -m tracklab.dagster_defs` lists `88` assets, the graph
+`uv run dagster asset list -m tracklab.dagster_defs` lists `83` assets, the graph
 `web/public/data/lineage.json` exports for the page.
-
-## The run that moves nobody
-
-[`/tracking/runs`](https://pitchandparquet.vercel.app/tracking/runs) is the project that died, published dead. It
-asked which off-ball run types move the defence in the tracking, with a protocol written before
-any outcome was computed (`pipeline/reports/runs_protocol.json`) and death criteria M1 to M5b.
-It stopped at M5a: no subtype was left to take to the held-out matches, which were never opened.
-
-M2 passed: the instrument sees a displacement it is forced to see, so the instrument works. M3 is
-what removed every probable subtype: the displacement before the run's `frame_start` already
-reaches more than half of the one after it. A look at the runners' speed written after the
-verdict (post hoc, it decides nothing) says why: `frame_start` comes late, the runner is already
-at speed at the instant the cause is measured (`t_c`), and M3 cannot separate the run from its own
-acceleration. The page says this design and this data could not tell a run from its acceleration;
-it does not say what any run does to the defence.
-
-```
-dead_at: M5a
-candidates: 0
-M2 marker mean: 1.423 m, same sign in 10 of 10 matches
-M3 pre-trend ratio, run_ahead_of_the_ball: 1.5254
-post hoc, run_ahead_of_the_ball, runner at 4.0 m/s or more at t_c: 0.987
-```
-
-In the graph the five assets of group `runs` do not write: each runs the `--check` of its command,
-which recomputes the versioned artefact from the warehouse and compares it. CI runs the checks on
-the fixtures (they say how much they verified) and `full-build` on the whole warehouse, after the
-build.
-
-```
-uv run tracklab runs protocol --check      # the split and the death criteria
-uv run tracklab runs coverage --check      # runs, windows and placebos per match
-uv run tracklab runs probe --check         # M1 and M2 (takes minutes)
-uv run tracklab runs effect --check        # M3 to M5a
-uv run tracklab publish runs --check       # runs.json and the two clips
-```
 
 ## Body pose
 
@@ -171,8 +135,9 @@ pose rows not flagged as detected: 2 of 1540715 in 1925299 and 1357 of 1571830 i
 The clips are a few seconds of each match, chosen by rule (the window of the high band whose cadence
 is nearest to the match's median, never the maximum) and drawn from the Parquet the pose zips become;
 the inflated JSON is read as a stream and never reaches the disk.
-In the graph the four assets of group `pose` only check, like the runs ones; CI runs the checks on
-the fixtures and `full-build` on the whole bronze.
+In the graph the four assets of group `pose` only check: each runs the `--check` of its command,
+which recomputes the versioned artefact and compares it. CI runs the checks on the fixtures and
+`full-build` on the whole bronze, after the build.
 
 ```
 uv run tracklab ingest opendata-bodypose        # the two zips, verified against the manifest
@@ -311,23 +276,6 @@ URL, so neither `git-lfs` nor a clone is needed. `GITHUB_TOKEN`, if set, is used
 `--from-existing <dir>` verifies a local clone in place instead; if a file fails only because a
 Windows checkout turned its line endings into CRLF, the message says so and names
 `core.autocrlf`.
-
-## EuroLeague
-
-The EuroLeague game files have no open license, so the site gets aggregates only: hexagon counts
-with a minimum of shots per cell, never a shot. Neither the game files nor the code that reads
-them from the provider are part of this repository; what is here turns files already under the
-data root into those aggregates and guards what gets published. From `pipeline/`:
-
-```
-uv run tracklab euroleague publish                                # web/public/data/euroleague/
-uv run pytest tests/publish/test_euroleague_guard.py              # the guard of those files
-(cd ../web && npm run build) && uv run tracklab euroleague sweep
-```
-
-`sweep` looks for the UTC of a fixed sample of real shots in `web/.next`, `web/public` and every
-`*.map`; one hit, or browser source maps switched on in `web/next.config.ts`, fails it. Without the
-downloaded data (CI) it says PARTIAL and passes, and with `TRACKLAB_REQUIRE_FULL=1` it fails.
 
 ## Data and license
 

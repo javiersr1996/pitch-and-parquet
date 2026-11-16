@@ -11,9 +11,9 @@ const TAKEDOWN = "javiersr1996+tracklab@gmail.com";
 
 const DISCLAIMER = [
   "Pitch & Parquet is a personal, non-commercial project built for learning.",
-  "It is not affiliated with, endorsed by or sponsored by SkillCorner, EuroLeague Basketball or any league, club or player named on this site.",
+  "It is not affiliated with, endorsed by or sponsored by SkillCorner or any league, club or player named on this site.",
   "All trademarks, names and data belong to their respective owners.",
-  "SkillCorner's open data is used under its MIT license; of EuroLeague game data only aggregates are shown.",
+  "SkillCorner's open data is used under its MIT license.",
   "The figures here are produced for educational purposes, may contain errors, and are not professional advice nor an assessment of any player or team.",
   `If you hold rights in anything shown here and want it corrected or removed, write to ${TAKEDOWN} and it will be taken down.`,
 ];
@@ -56,7 +56,7 @@ test("/about names the author, links to him and to the code, and prints the stac
 });
 
 test("the footer of every route says who made it, links to /about, LinkedIn and the code, and what it is not", async ({ page }) => {
-  for (const route of ["/", "/about", "/engineering", "/learn/gravity", "/euroleague", "/no-such-page"]) {
+  for (const route of ["/", "/about", "/engineering", "/learn/gravity", "/tracking/pose", "/no-such-page"]) {
     await page.goto(route);
     const author = page.locator("footer.site-footer [data-footer-author]");
     await expect(author, route).toBeVisible();
@@ -66,7 +66,7 @@ test("the footer of every route says who made it, links to /about, LinkedIn and 
     await expect(author.getByRole("link", { name: "LinkedIn" })).toHaveAttribute("href", LINKEDIN);
     await expect(author.getByRole("link", { name: "GitHub", exact: true })).toHaveAttribute("href", REPO);
     await expect(author, route).toContainText(
-      "Non-commercial, built for learning; not affiliated with SkillCorner or EuroLeague. More in /about.",
+      "Non-commercial, built for learning; not affiliated with SkillCorner. More in /about.",
     );
   }
 });

@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { formatBytes } from "../../lib/format";
 import { type LayerName, PLATFORM, rawSourceMeta } from "../../lib/platform";
-import { EUROLEAGUE } from "../../lib/sections";
 
 // The architecture as one picture (P20, task 173), on the home page and at the head of
 // /engineering: SkillCorner's sources, the layers Dagster runs, what the browser reads,
-// and the two paths beside them (Postgres, EuroLeague). Real text in boxes on a CSS grid, so it
+// and the path beside them (Postgres). Real text in boxes on a CSS grid, so it
 // restacks top to bottom on a phone instead of shrinking; the connectors are CSS, decorative.
 // Every byte figure is platform.json's (`raw_sources[]`, `layers[]`), none is typed. Each layer's
 // tool is what Flow.tsx's layer lines and the code behind them say; its role is a few words.
@@ -95,23 +94,11 @@ export function Architecture() {
           </p>
           <p className="arch-role">gold&apos;s second path, loaded by a command outside Dagster</p>
         </div>
-        <div className="arch-side arch-el">
-          <a href={EUROLEAGUE.href} className="arch-el-end">
-            EuroLeague game feed
-          </a>
-          <span className="arch-el-line" aria-hidden="true" />
-          <span className="arch-el-label">aggregates only, never a shot; not counted in the bytes</span>
-          <span className="arch-el-line" aria-hidden="true" />
-          <Link href="/euroleague" prefetch={false} className="arch-el-end">
-            /euroleague
-          </Link>
-        </div>
       </div>
       <figcaption id="arch-caption">
         The pipeline in order: SkillCorner&apos;s open sources into raw, then bronze, silver, gold, quality and
         publish, the layers Dagster runs, each with the bytes the latest build measured; what publish
-        writes is read in your browser. Gold also loads into Postgres, outside Dagster. EuroLeague is a lane of
-        its own: only its aggregates are published, and its bytes are not counted.
+        writes is read in your browser. Gold also loads into Postgres, outside Dagster.
       </figcaption>
     </figure>
   );

@@ -39,11 +39,6 @@ export const SECTIONS = [
     about: "How far and how fast the players of each football position group run, in the provider's season aggregates, each group drawn where it plays.",
   },
   {
-    href: "/tracking/runs",
-    title: "The run that moves nobody",
-    about: "The project that died, published dead.",
-  },
-  {
     href: "/tracking/pose",
     title: "Body pose",
     about: "The joints of the players SkillCorner's Body Pose resolves in each frame, each with its predicted error.",
@@ -65,12 +60,6 @@ export const SECTIONS = [
     title: "Learn SQL on the warehouse",
     about: `${SQL_LESSONS.length} lessons that take you from your first SELECT to window functions and CTEs.`,
   },
-  {
-    // P14: the first data that is not SkillCorner's, aggregates only.
-    href: "/euroleague",
-    title: "Where EuroLeague shoots from",
-    about: "EuroLeague field goals binned into hexagons on a FIBA half court: the league, each team and its main shooters.",
-  },
 ] as const;
 
 export type SectionHref = (typeof SECTIONS)[number]["href"];
@@ -83,9 +72,7 @@ export const EXPLORE: readonly SectionHref[] = [
   "/tracking/replay",
   "/tracking/occupancy",
   "/warehouse/positions",
-  "/euroleague",
   "/tracking/pose",
-  "/tracking/runs",
   "/warehouse",
   "/warehouse/scouting",
 ];
@@ -94,7 +81,6 @@ export const BUILT: readonly SectionHref[] = ["/engineering", "/engineering/qual
 // The header's entries (P15, task 121, Javier's option 1 of 2026-11-01), and About (P20). Tracking,
 // Engineering, Warehouse (P17) and Learn group pages, which a second row of the header lists on any
 // page under them; Learn holds the lessons and the SQL course, whose addresses did not move (P21).
-// /euroleague is no entry (P27): the home's Explore and the expected-points lesson lead to it.
 export type NavEntry = { href: string; nav: string; pages?: { href: string; nav: string }[] };
 export const NAV: NavEntry[] = [
   {
@@ -102,7 +88,6 @@ export const NAV: NavEntry[] = [
     nav: "Tracking",
     pages: [
       { href: "/tracking/replay", nav: "Replay" },
-      { href: "/tracking/runs", nav: "Runs" },
       { href: "/tracking/pose", nav: "Pose" },
       { href: "/tracking/occupancy", nav: "Occupancy" },
     ],
@@ -153,9 +138,7 @@ export const pageOf = (path: string, pages: NonNullable<NavEntry["pages"]>) =>
 // Where the site is served, so a relative og:image becomes the absolute URL a link preview needs.
 export const SITE = "https://pitchandparquet.vercel.app";
 
-// Where the data comes from. SkillCorner's three, as `pipeline/manifest/sources.json` pins them,
-// are MIT; EuroLeague's is not under any open license, so the footer gives it its own note and
-// the site publishes only aggregates of it (P14).
+// Where the data comes from, as `pipeline/manifest/sources.json` pins it (all three MIT).
 export const DATA_SOURCES = [
   { name: "SkillCorner/opendata", href: "https://github.com/SkillCorner/opendata", what: "football", license: "MIT" },
   {
@@ -170,20 +153,7 @@ export const DATA_SOURCES = [
     what: "body pose",
     license: "MIT",
   },
-  {
-    name: "EuroLeague",
-    href: "https://www.euroleaguebasketball.net/euroleague/",
-    what: "basketball shots",
-    license: null,
-  },
 ] as const;
-
-// EuroLeague's game feed, the host the aggregates are computed from (league.json's `source`).
-export const EUROLEAGUE = DATA_SOURCES.find((s) => s.name === "EuroLeague")!;
-
-// Where a removal request for the EuroLeague aggregates goes (Javier's choice at CP14a, 2026-11-01);
-// if it is ever emptied the page says the contact is pending.
-export const TAKEDOWN_CONTACT: string = "javiersr1996+tracklab@gmail.com";
 
 // Who made the site and where the code is (P20, task 171): the footer, the home's byline and
 // /about read these.
@@ -193,3 +163,6 @@ export const AUTHOR = {
   email: "javiersr1996@gmail.com",
 } as const;
 export const REPO = "https://github.com/javiersr1996/pitch-and-parquet";
+
+// Where a correction or removal request goes (/about's disclaimer).
+export const TAKEDOWN_CONTACT: string = "javiersr1996+tracklab@gmail.com";

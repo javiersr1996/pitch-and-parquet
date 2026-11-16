@@ -233,10 +233,6 @@ test("the stack strip, the ingest counters and the sources block print what the 
     run: { versions: Record<string, string> };
     layers: { layer: string; downloaded?: number; verified?: number; bytes_read?: number }[];
   };
-  const league = (await (await page.request.get("/data/euroleague/league.json")).json()) as {
-    hex: { k: number };
-    seasons: { season: string; games_played: number; cutoff: string }[];
-  };
   await page.goto("/engineering");
 
   for (const [tool, version] of Object.entries(platform.run.versions)) {
@@ -256,23 +252,13 @@ test("the stack strip, the ingest counters and the sources block print what the 
     await expect(card.locator('[data-field="bytes"]')).toHaveText(src.bytes.toLocaleString("en-US"));
     await expect(card.locator("[data-counts-in-out]")).toHaveText("yes");
   }
-  const el = page.locator('[data-source="euroleague"]');
-  for (const s of league.seasons) {
-    const row = el.locator(`[data-season="${s.season}"]`);
-    await expect(row.locator('[data-field="games"]')).toHaveText(String(s.games_played));
-    await expect(row.locator('[data-field="cutoff"]')).toHaveText(s.cutoff);
-  }
-  await expect(el.locator('[data-field="k"]')).toHaveText(String(league.hex.k));
-  await expect(el.locator("[data-counts-in-out]")).toHaveText(/^no/);
-
-  // The title still counts SkillCorner only: EuroLeague is not in "out".
-  await expect(page.locator("h1")).toHaveText("3.6 GB in, 9.6 MB out");
+  await expect(page.locator("[data-sources] > li")).toHaveCount(platform.raw_sources.length);
 });
 
 // Until P20 the repository was private and no route could link to it; P20 opens it, and the
 // footer of every route links to that one repository and to no other address under the account.
 test("every route links to the public repository from its footer, and to no other repository", async ({ page }) => {
-  const routes = ["/", "/tracking", "/engineering", "/tracking/runs", "/engineering/quality", "/warehouse", "/tracking/replay", "/tracking/pose", "/learn", "/sql", "/euroleague", "/engineering/bulletin", "/engineering/history", "/about"];
+  const routes = ["/", "/tracking", "/engineering", "/engineering/quality", "/warehouse", "/tracking/replay", "/tracking/pose", "/learn", "/sql", "/engineering/bulletin", "/engineering/history", "/about"];
   for (const route of routes) {
     await page.goto(route);
     const hrefs = await page.locator("a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
@@ -344,7 +330,7 @@ test("the guarantees and the Postgres block print what platform.json and warehou
     await expect(page.locator("main")).not.toContainText(/on Neon/);
   }
 
-  await expect(page.locator("h1")).toHaveText("3.6 GB in, 9.6 MB out");
+  await expect(page.locator("h1")).toHaveText("3.6 GB in, 9.4 MB out");
 });
 
 test("the guarantee cards do not overflow a phone", async ({ page }) => {

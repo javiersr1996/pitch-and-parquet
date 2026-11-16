@@ -1,5 +1,4 @@
 import { expect, type Page, test } from "@playwright/test";
-import { type Stage, STAGE_NAMES } from "../lib/runs/types";
 
 // P20, task 175: the home's findings. Each figure is compared with the published file it comes
 // from, and each card's claim is looked up on the page the card opens, so the strip neither
@@ -7,22 +6,15 @@ import { type Stage, STAGE_NAMES } from "../lib/runs/types";
 
 const json = async <T,>(page: Page, path: string) => (await (await page.request.get(path)).json()) as T;
 
-test("the three findings print their files' figures and open the pages that make the claims", async ({ page }) => {
+test("the two findings print their files' figures and open the pages that make the claims", async ({ page }) => {
   const quality = await json<{ hook: { g_data: number; g_real: number } }>(page, "/data/quality.json");
   const platform = await json<{ title: string; subtitle: string; layers: unknown[] }>(page, "/data/platform.json");
-  const runs = await json<{
-    status: string;
-    dead_at: string;
-    stages: Record<string, { figures: { candidates?: number } }>;
-    never_opened: { match_ids: number[] };
-  }>(page, "/data/runs.json");
 
   await page.goto("/");
   const cards = page.locator("[data-finding]");
   expect(await cards.evaluateAll((els) => els.map((e) => e.getAttribute("data-finding")))).toEqual([
     "gravity",
     "bytes",
-    "runs",
   ]);
   const fig = (card: string, name: string) => page.locator(`[data-finding="${card}"] [data-fig="${name}"]`);
 
@@ -33,19 +25,10 @@ test("the three findings print their files' figures and open the pages that make
   await expect(fig("bytes", "subtitle")).toHaveText(platform.subtitle);
   await expect(page.locator('[data-finding="bytes"] h3')).toHaveText(`One pipeline run, ${platform.layers.length} layers`);
 
-  expect(runs.status).toBe("dead");
-  // The stage by its name, never its code (P24): the code is the attribute, the name the text.
-  await expect(fig("runs", "dead_at")).toHaveAttribute("data-stage", runs.dead_at);
-  await expect(fig("runs", "dead_at")).toHaveText(STAGE_NAMES[runs.dead_at as Stage]);
-  await expect(fig("runs", "candidates")).toHaveText(String(runs.stages[runs.dead_at].figures.candidates));
-  await expect(fig("runs", "held_out")).toHaveText(String(runs.never_opened.match_ids.length));
-
-  // Each claim is its page's own words (the runs page's line is its section card's, which the page
-  // carries as its description).
+  // Each claim is its page's own words.
   const claims: [string, string, string[]][] = [
     ["gravity", "/learn/gravity", ["The ball falls as if the Earth were lighter."]],
     ["bytes", "/engineering", [`One pipeline run, ${platform.layers.length} layers`]],
-    ["runs", "/tracking/runs", ["The project that died, published dead.", "The run that moves nobody", "The negative is published under the same title."]],
   ];
   for (const [card, href, words] of claims) {
     await expect(page.locator(`[data-finding="${card}"] h3 a`)).toHaveAttribute("href", href);
@@ -53,10 +36,10 @@ test("the three findings print their files' figures and open the pages that make
     for (const w of words) expect(html, `${href} says "${w}"`).toContain(w);
   }
   // The whole card opens its page.
-  await page.locator('[data-finding="runs"]').scrollIntoViewIfNeeded();
-  const box = (await page.locator('[data-finding="runs"] .finding-about').boundingBox())!;
+  await page.locator('[data-finding="gravity"]').scrollIntoViewIfNeeded();
+  const box = (await page.locator('[data-finding="gravity"] .finding-about').boundingBox())!;
   await page.mouse.click(box.x + 4, box.y + 4);
-  await expect(page).toHaveURL(/\/tracking\/runs$/);
+  await expect(page).toHaveURL(/\/learn\/gravity$/);
 });
 
 for (const viewport of [

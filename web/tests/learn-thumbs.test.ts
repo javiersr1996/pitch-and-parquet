@@ -6,7 +6,7 @@ import { type Mark, THUMB, thumbOf } from "../lib/learn/thumbs";
 
 // Task 182: the drawing beside each lesson on /learn. Broken on purpose while writing these: a
 // thumbnail drawn for one slug only fails the first; the same drawing for two lessons the second;
-// a bar width from a typed share, or the ticks of another touch, the two that reread the files.
+// the ticks of another touch, the one that rereads the files.
 const json = (...parts: string[]) => JSON.parse(readFileSync(join(process.cwd(), "public", "data", ...parts), "utf-8"));
 const published = LESSONS.filter((l) => l.status === "published");
 
@@ -39,20 +39,6 @@ describe("lesson thumbnails", () => {
         }
       }
     }
-  });
-
-  it("sizes lesson 12's bars from expected-points.json: widths by attempts, heights by points per shot", () => {
-    const season = json("euroleague", "expected-points.json").seasons[0];
-    const classes = ["rim", "mid", "three"];
-    const bars = thumbOf("expected-points")!.filter((m): m is Extract<Mark, { kind: "rect" }> => m.kind === "rect");
-    expect(bars).toHaveLength(classes.length);
-    const total = classes.reduce((s, c) => s + season.league[c].n, 0);
-    const inner = THUMB.w - 2 * THUMB.pad;
-    const tallest = Math.max(...classes.map((c) => season.pps[c]));
-    classes.forEach((c, i) => {
-      expect(bars[i].w + 2, c).toBeCloseTo((inner * season.league[c].n) / total, 0);
-      expect(bars[i].h, c).toBeCloseTo(((THUMB.h - 2 * THUMB.pad) * season.pps[c]) / tallest, 0);
-    });
   });
 
   it("ticks each dribble of dribble.json's example touch, and draws each player of rebound.json's example", () => {

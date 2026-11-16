@@ -1,6 +1,6 @@
 """``pose_*`` and ``publish_pose``: the P6 artefacts in the graph, group ``pose`` (task 64).
 
-Like the ``runs`` group, these never write: each runs the ``--check`` of its command, which
+These never write: each runs the ``--check`` of its command, which
 recomputes the versioned artefact from the bronze at ``data_root()`` and compares it with the file
 in the repository (``FULL n/n`` on the whole bronze, ``PARTIAL`` on a slice, which says what it
 verified). A write here would be wrong twice: the metric and the publication read the confirmation
@@ -8,17 +8,18 @@ match only past the guard, which refuses a dirty tree, and a check that follows 
 compares a file with itself. The asset fails when the check exits non-zero.
 
 Not part of ``group:silver`` or ``group:gold``, so CI's run on the fixtures never selects them.
-``full-build`` selects everything but this group and the runs one, and runs the four checks as
+``full-build`` selects everything but this group, and runs the four checks as
 steps of their own, after the build: the metric takes about half an hour, and a step of its own
 names the one that failed.
 """
 
+# No `from __future__ import annotations`: Dagster reads the `context` hint at runtime.
+from collections.abc import Callable
 from pathlib import Path
 
-from dagster import AssetExecutionContext, Failure, asset
+from dagster import AssetExecutionContext, AssetsDefinition, Failure, asset
 
 from tracklab.dagster_defs.assets_bronze import BODYPOSE_KEYS
-from tracklab.dagster_defs.assets_runs import REPORTS_DIR, WEB_DATA_DIR, check_asset
 from tracklab.paths import data_root
 from tracklab.pose.coverage import run_pose_coverage
 from tracklab.pose.metric import run_pose_metric
@@ -26,11 +27,27 @@ from tracklab.pose.protocol import run_pose_protocol
 from tracklab.publish.pose import run_publish_pose
 
 # Relative to pipeline/, like the paths of the other publish assets.
+WEB_DATA_DIR = Path("../web/public/data")
+REPORTS_DIR = Path("reports")
 MANIFEST = Path("manifest/sources.json")
 SCHEMA = Path("../web/lib/pose/schema.json")
 
 # The bronze the checks read: the pose of both matches and the lineup that orders their players.
 _BRONZE = (*BODYPOSE_KEYS, "bronze_football_match_players")
+
+Check = Callable[[Path, Path], int]
+
+
+def check_asset(
+    name: str, command: str, run: Check, deps: list[str], description: str
+) -> AssetsDefinition:
+    @asset(name=name, group_name="pose", deps=deps, description=description)
+    def _run(context: AssetExecutionContext) -> None:
+        if run(data_root(), REPORTS_DIR) != 0:
+            raise Failure(f"tracklab {command} --check failed")
+
+    return _run
+
 
 pose_coverage = check_asset(
     "pose_coverage",
@@ -38,7 +55,6 @@ pose_coverage = check_asset(
     lambda data, reports: run_pose_coverage(data, reports, check=True),
     list(_BRONZE),
     "reports/pose_coverage.json: frames, player-frames and joints with a pose per match, checked.",
-    group="pose",
 )
 pose_protocol = check_asset(
     "pose_protocol",
@@ -46,7 +62,6 @@ pose_protocol = check_asset(
     lambda data, reports: run_pose_protocol(data, reports, check=True),
     [*_BRONZE, "pose_coverage"],
     "reports/pose_protocol.json: the frozen protocol against the code and the denominators.",
-    group="pose",
 )
 pose_metric = check_asset(
     "pose_metric",
@@ -54,7 +69,6 @@ pose_metric = check_asset(
     lambda data, reports: run_pose_metric(data, reports, check=True),
     [*_BRONZE, "pose_protocol"],
     "reports/pose_metric.json: the metric in both matches, recomputed and compared.",
-    group="pose",
 )
 
 

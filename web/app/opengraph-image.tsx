@@ -9,7 +9,7 @@ import type { Possession } from "../lib/replay/types";
 import { AUTHOR } from "../lib/sections";
 
 // The card for every page that has no image of its own (P19, task 150; drawn in P20, task 172):
-// the lessons, /sql and /euroleague keep theirs. Beside the words, the home hero's first
+// the lessons and /sql keep theirs. Beside the words, the home hero's first
 // basketball possession at its last frame, on the half court it attacks, each player and the ball
 // with the path of its last two seconds fading behind it. Nothing is placed by hand: the court is
 // lib/geometry's FIBA markings, the marks are the possession file's. The palette is the hero's

@@ -1,14 +1,22 @@
 import type { NextConfig } from "next";
 
-// P15, task 121: the six pages that moved under /tracking and /engineering. `permanent: true` is
+// P15, task 121: the pages that moved under /tracking and /engineering. `permanent: true` is
 // Next's 308 (a 301 that keeps the method); a query such as `/replay?p=<file>` is carried over.
 const MOVED = [
   { source: "/replay", destination: "/tracking/replay" },
-  { source: "/runs", destination: "/tracking/runs" },
   { source: "/pose", destination: "/tracking/pose" },
   { source: "/platform", destination: "/engineering" },
   { source: "/quality", destination: "/engineering/quality" },
   { source: "/bulletin", destination: "/engineering/bulletin" },
+];
+
+// Pages the site no longer has, sent to the closest section so a shared link still lands
+// somewhere. Temporary (307), so nothing caches the move for good.
+const GONE = [
+  { source: "/runs", destination: "/tracking" },
+  { source: "/tracking/runs", destination: "/tracking" },
+  { source: "/euroleague", destination: "/learn" },
+  { source: "/learn/expected-points", destination: "/learn" },
 ];
 
 // P19, task 159: the full policy goes out as Report-Only first, so the console of a real browser says
@@ -52,7 +60,7 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
-    return MOVED.map((m) => ({ ...m, permanent: true }));
+    return [...MOVED.map((m) => ({ ...m, permanent: true })), ...GONE.map((m) => ({ ...m, permanent: false }))];
   },
 };
 
