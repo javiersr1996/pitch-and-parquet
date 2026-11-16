@@ -4595,3 +4595,51 @@ main:has(> .chapters) [id] {
       border-color 0.15s;
   }
 }
+
+/* Tabs (P32, task 211): one of several long lists at a time. The row is the site's buttons, the
+   selected one filled like a primary button; the panels not on show are hidden. */
+.tabs-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block: var(--space-4);
+}
+
+.tabs-list [role="tab"][aria-selected="true"] {
+  border-color: var(--neon);
+  background: var(--neon);
+  color: var(--neon-bg);
+}
+
+.tabs-list [role="tab"][aria-selected="true"]:hover {
+  border-color: var(--neon-2);
+  background: var(--neon-2);
+  color: var(--neon-bg);
+}
+
+.tabs-list [role="tab"]:focus-visible,
+.tabs-panel:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Explore on a phone (P32, task 211): the cards in one row that scrolls sideways and snaps card by
+   card, the next one showing at the edge; from 640 px the grid as before. The row's padding leaves
+   room for a card's focus ring. */
+@media (max-width: 39.98rem) {
+  .home-explore .cards {
+    grid-template-columns: none;
+    grid-auto-columns: 85%;
+    grid-auto-flow: column;
+    margin-inline: -4px;
+    padding: 4px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: 4px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .home-explore .card {
+    scroll-snap-align: start;
+  }
+}

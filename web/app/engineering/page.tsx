@@ -5,6 +5,7 @@ import { Stack } from "../../components/platform/Stack";
 import { StepGantt } from "../../components/platform/StepGantt";
 import { Band, PageHead } from "../../components/site/Band";
 import { type Chapter, Chapters } from "../../components/site/Chapters";
+import { Fold } from "../../components/site/Fold";
 import { pluralize } from "../../lib/format";
 import { LEAGUE } from "../../lib/euroleague/data";
 import { firstBeforeBars, firstEvents, LINEAGE, PLATFORM, poseShare, rawSourceMeta, silverModelRows } from "../../lib/platform";
@@ -328,34 +329,37 @@ export default function PlatformPage() {
           season-level files (aggregates, <code>matches.json</code>, player aliases, the body-pose
           sample) are not attributed to any one match and are totalled separately below.
         </p>
-        <div className="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                {MATCH_FIELDS.map((field) => (
-                  <th scope="col" key={field}>
-                    {field}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {matches.map((m) => (
-                <tr key={m.match_id}>
+        {/* Folded (P32): the table is reference, the paragraph above says what it holds. */}
+        <Fold heading="matches" summary={`${matches.length} matches by ${MATCH_FIELDS.length} columns, and the season files`}>
+          <div className="table-scroll">
+            <table>
+              <thead>
+                <tr>
                   {MATCH_FIELDS.map((field) => (
-                    <td key={field} data-match={m.match_id} data-field={field}>
-                      {formatMatchField(field, m[field])}
-                    </td>
+                    <th scope="col" key={field}>
+                      {field}
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <p>
-          Season files: {seasonFiles.files} files, {seasonFiles.bytes.toLocaleString("en-US")} bytes,
-          not part of any match above.
-        </p>
+              </thead>
+              <tbody>
+                {matches.map((m) => (
+                  <tr key={m.match_id}>
+                    {MATCH_FIELDS.map((field) => (
+                      <td key={field} data-match={m.match_id} data-field={field}>
+                        {formatMatchField(field, m[field])}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Season files: {seasonFiles.files} files, {seasonFiles.bytes.toLocaleString("en-US")} bytes,
+            not part of any match above.
+          </p>
+        </Fold>
 
         <h2 id="silver-models">Silver models</h2>
         <p>
@@ -368,44 +372,46 @@ export default function PlatformPage() {
           {pluralize(seedCount, "seed")} don&apos;t, so those cells stay blank rather than showing an
           invented 0).
         </p>
-        <div className="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th scope="col">model</th>
-                <th scope="col">dbt columns</th>
-                <th scope="col">dbt tests</th>
-                <th scope="col">rows</th>
-                <th scope="col">bytes</th>
-                <th scope="col">dbt seconds</th>
-              </tr>
-            </thead>
-            <tbody>
-              {modelRows.map((row) => (
-                <tr key={row.key}>
-                  <td data-model={row.key} data-field="key">
-                    {row.key}
-                  </td>
-                  <td data-model={row.key} data-field="dbt_columns">
-                    {row.dbt_columns.length}
-                  </td>
-                  <td data-model={row.key} data-field="dbt_tests">
-                    {row.dbt_tests}
-                  </td>
-                  <td data-model={row.key} data-field="rows">
-                    {row.rows === null ? "" : row.rows.toLocaleString("en-US")}
-                  </td>
-                  <td data-model={row.key} data-field="bytes">
-                    {row.bytes === null ? "" : row.bytes.toLocaleString("en-US")}
-                  </td>
-                  <td data-model={row.key} data-field="dbt_seconds">
-                    {row.dbt_seconds === null ? "" : row.dbt_seconds.toFixed(1)}
-                  </td>
+        <Fold heading="silver-models" summary={`${modelRows.length} silver nodes: columns, tests, rows, bytes and dbt seconds`}>
+          <div className="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">model</th>
+                  <th scope="col">dbt columns</th>
+                  <th scope="col">dbt tests</th>
+                  <th scope="col">rows</th>
+                  <th scope="col">bytes</th>
+                  <th scope="col">dbt seconds</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {modelRows.map((row) => (
+                  <tr key={row.key}>
+                    <td data-model={row.key} data-field="key">
+                      {row.key}
+                    </td>
+                    <td data-model={row.key} data-field="dbt_columns">
+                      {row.dbt_columns.length}
+                    </td>
+                    <td data-model={row.key} data-field="dbt_tests">
+                      {row.dbt_tests}
+                    </td>
+                    <td data-model={row.key} data-field="rows">
+                      {row.rows === null ? "" : row.rows.toLocaleString("en-US")}
+                    </td>
+                    <td data-model={row.key} data-field="bytes">
+                      {row.bytes === null ? "" : row.bytes.toLocaleString("en-US")}
+                    </td>
+                    <td data-model={row.key} data-field="dbt_seconds">
+                      {row.dbt_seconds === null ? "" : row.dbt_seconds.toFixed(1)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Fold>
       </Band>
     </main>
   );

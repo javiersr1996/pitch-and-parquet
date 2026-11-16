@@ -374,20 +374,8 @@
   background: var(--neon);
 }
 
-/* Runs and comebacks (task 118): two ranked lists side by side from 1000 px, then a card per team. */
-.el-rankings {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-5);
-  margin-top: var(--space-4);
-}
-
-@media (min-width: 1000px) {
-  .el-rankings {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
+/* Runs and comebacks (task 118): two ranked lists, then a card per team, one of the three at a time
+   under its tab (P32). */
 .el-rank-block h3 {
   margin-top: 0;
 }

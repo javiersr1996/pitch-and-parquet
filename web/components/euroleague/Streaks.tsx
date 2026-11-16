@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { seasonLabel } from "../../lib/euroleague/atlas";
 import { type Pair, ranks, type Runs, score, type TeamRuns } from "../../lib/euroleague/runs";
 import { Band } from "../site/Band";
+import { Tabs } from "../site/Tabs";
 
 interface Entry {
   team: string;
@@ -77,6 +78,7 @@ const S = ({ p }: { p: Pair }) => <span className="el-score">{score(p)}</span>;
 
 // "Runs and comebacks" (task 118): the top of the season's biggest runs and comebacks, and a card
 // per team, from runs.json. The team chosen in the atlas comes first, lit, as in "What has changed".
+// The three lists are tabs (P32): one on show at a time, the runs first.
 export function Streaks({
   runs,
   season,
@@ -93,6 +95,80 @@ export function Streaks({
     if (a.code === selected || b.code === selected) return a.code === selected ? -1 : 1;
     return b.best_run - a.best_run || (names[a.code] ?? a.code).localeCompare(names[b.code] ?? b.code);
   });
+  const runsList = (
+    <Ranking
+      id="runs"
+      title="Biggest runs"
+      note="Points in a row by one team, and the score it started and ended on (its own first)."
+      unit="in a row"
+      selected={selected}
+      names={names}
+      entries={block.runs.map((r) => ({
+        team: r.team,
+        opp: r.opp,
+        date: r.date,
+        size: r.size,
+        detail: (
+          <>
+            from <S p={r.from} /> to <S p={r.to} />
+          </>
+        ),
+      }))}
+    />
+  );
+  const comebacksList = (
+    <Ranking
+      id="comebacks"
+      title="Biggest comebacks"
+      note="The deficit the winner overcame, the score when it was that far behind and the final score."
+      unit="down"
+      selected={selected}
+      names={names}
+      entries={block.comebacks.map((c) => ({
+        team: c.team,
+        opp: c.opp,
+        date: c.date,
+        size: c.deficit,
+        detail: (
+          <>
+            trailed <S p={c.at} />, won <S p={c.final} />
+          </>
+        ),
+      }))}
+    />
+  );
+  const byTeam = (
+    <>
+      <h3 id="el-streaks-teams-title">By team</h3>
+      <p>
+        Sorted by the biggest run, with the team chosen above first. A game counts in &ldquo;games with a run
+        of {runs.run_min}+&rdquo; from {runs.run_min} points in a row, and in &ldquo;wins after trailing by{" "}
+        {runs.deficit_min}+&rdquo; from {runs.deficit_min} points behind.
+      </p>
+      <ol className="el-streak-teams" aria-labelledby="el-streaks-teams-title">
+        {teams.map((t) => (
+          <li
+            key={t.code}
+            className="el-streak-team"
+            data-streak-team={t.code}
+            data-selected={selected === t.code ? "true" : undefined}
+            aria-current={selected === t.code ? "true" : undefined}
+          >
+            <h4 className="el-streak-name">{names[t.code] ?? t.code}</h4>
+            <p className="el-streak-games">{t.games} games</p>
+            <dl className="el-streak-stats">
+              {STATS.map((s) => (
+                <div key={s.key}>
+                  <dt>{s.label(runs)}</dt>
+                  <dd data-stat={s.key}>{t[s.key]}</dd>
+                </div>
+              ))}
+            </dl>
+          </li>
+        ))}
+      </ol>
+    </>
+  );
   return (
     <Band dark className="el-streaks-band">
       <section aria-labelledby="el-streaks-title" data-streaks={season}>
@@ -101,77 +177,18 @@ export function Streaks({
           A run is the most points a team scores in a row inside a game while the other side does not score; a
           comeback is the biggest deficit that the team that won had overcome. {seasonLabel(season)}:{" "}
           {block.games_read} games read, through {block.cutoff}. Each list is the top {runs.top} of the season,
-          with every tie at the last place kept; the rest of the games are summed up by team below, never one row
-          per game.
+          with every tie at the last place kept; the rest of the games are summed up by team under By team, never
+          one row per game.
         </p>
-        <div className="el-rankings">
-          <Ranking
-            id="runs"
-            title="Biggest runs"
-            note="Points in a row by one team, and the score it started and ended on (its own first)."
-            unit="in a row"
-            selected={selected}
-            names={names}
-            entries={block.runs.map((r) => ({
-              team: r.team,
-              opp: r.opp,
-              date: r.date,
-              size: r.size,
-              detail: (
-                <>
-                  from <S p={r.from} /> to <S p={r.to} />
-                </>
-              ),
-            }))}
-          />
-          <Ranking
-            id="comebacks"
-            title="Biggest comebacks"
-            note="The deficit the winner overcame, the score when it was that far behind and the final score."
-            unit="down"
-            selected={selected}
-            names={names}
-            entries={block.comebacks.map((c) => ({
-              team: c.team,
-              opp: c.opp,
-              date: c.date,
-              size: c.deficit,
-              detail: (
-                <>
-                  trailed <S p={c.at} />, won <S p={c.final} />
-                </>
-              ),
-            }))}
-          />
-        </div>
-        <h3 id="el-streaks-teams-title">By team</h3>
-        <p>
-          Sorted by the biggest run, with the team chosen above first. A game counts in &ldquo;games with a run
-          of {runs.run_min}+&rdquo; from {runs.run_min} points in a row, and in &ldquo;wins after trailing by{" "}
-          {runs.deficit_min}+&rdquo; from {runs.deficit_min} points behind.
-        </p>
-        <ol className="el-streak-teams" aria-labelledby="el-streaks-teams-title">
-          {teams.map((t) => (
-            <li
-              key={t.code}
-              className="el-streak-team"
-              data-streak-team={t.code}
-              data-selected={selected === t.code ? "true" : undefined}
-              aria-current={selected === t.code ? "true" : undefined}
-            >
-              <h4 className="el-streak-name">{names[t.code] ?? t.code}</h4>
-              <p className="el-streak-games">{t.games} games</p>
-              <dl className="el-streak-stats">
-                {STATS.map((s) => (
-                  <div key={s.key}>
-                    <dt>{s.label(runs)}</dt>
-                    <dd data-stat={s.key}>{t[s.key]}</dd>
-                  </div>
-                ))}
-              </dl>
-            </li>
-          ))}
-        </ol>
+        <Tabs
+          label="Runs and comebacks"
+          className="el-streak-tabs"
+          tabs={[
+            { key: "runs", label: "Runs", panel: runsList },
+            { key: "comebacks", label: "Comebacks", panel: comebacksList },
+            { key: "teams", label: "By team", panel: byTeam },
+          ]}
+        />
       </section>
     </Band>
   );

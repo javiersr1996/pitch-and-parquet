@@ -4,6 +4,7 @@ import { type ReactNode, useEffect, useState } from "react";
 import { Pose } from "../../../components/pose/Pose";
 import { Band, PageHead } from "../../../components/site/Band";
 import { type Chapter, Chapters } from "../../../components/site/Chapters";
+import { Tabs } from "../../../components/site/Tabs";
 import { formatBytes } from "../../../lib/format";
 import type { PoseClip, PoseSummary } from "../../../lib/pose/types";
 
@@ -195,6 +196,19 @@ function CoverageTable({ doc }: { doc: PoseSummary }) {
 // Columns of a metric row, by name, so the table does not count them.
 const col = (doc: PoseSummary, name: string) => doc.tables?.columns.indexOf(name) ?? -1;
 
+// Which match of the protocol a table's match is.
+const roleOf = (doc: PoseSummary, match: string) => (match === String(doc.protocol.calibration) ? "calibration" : "confirmation");
+
+// A match's tab (P32): one match's table at a time, the first as before.
+function MatchTab({ doc, match }: { doc: PoseSummary; match: string }) {
+  const role = roleOf(doc, match);
+  return (
+    <>
+      Match <S doc={doc} p={`protocol.${role}`} />, {role}
+    </>
+  );
+}
+
 function MetricTables({ doc }: { doc: PoseSummary }) {
   const tables = doc.tables;
   if (tables === null) return null;
@@ -208,54 +222,59 @@ function MetricTables({ doc }: { doc: PoseSummary }) {
     "finite_s",
   ].map((name) => col(doc, name));
   return (
-    <>
-      {Object.keys(tables.matches).map((match) => (
-        <div className="table-scroll" key={match}>
-          <table data-table="players" data-match={match}>
-            <caption>
-              Match <S doc={doc} p={`protocol.${match === String(doc.protocol.calibration) ? "calibration" : "confirmation"}`} />, by team and
-              shirt number, one row per player and band, the whole match
-            </caption>
-            <thead>
-              <tr>
-                <th>team</th>
-                <th>no.</th>
-                <th>player</th>
-                <th>band</th>
-                <th>windows</th>
-                <th>finite in s</th>
-                <th>cadence, Hz</th>
-                <th>step, m</th>
-                <th>ankle separation, m</th>
-                <th>separation over step</th>
-                <th>mean speed, m/s</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tables.matches[match].map((row, i) => {
-                if (row[period] !== "all") return null;
-                const r = `tables.matches.${match}.${i}`;
-                return (
-                  <tr key={i} data-row={`${match}.${i}`}>
-                    <td><S doc={doc} p={`${r}.${team}`} /></td>
-                    <td><S doc={doc} p={`${r}.${number}`} /></td>
-                    <td><S doc={doc} p={`${r}.${player}`} /></td>
-                    <td>{String(row[band])}</td>
-                    <td><S doc={doc} p={`${r}.${windows}`} /></td>
-                    <td><S doc={doc} p={`${r}.${finite}`} /></td>
-                    <td><Pm doc={doc} row={r} v={col(doc, "cad_s_p50_hz")} sd={col(doc, "cad_s_sd_hz")} /></td>
-                    <td><Pm doc={doc} row={r} v={col(doc, "step_length_p50_m")} sd={col(doc, "step_length_sd_m")} /></td>
-                    <td><Pm doc={doc} row={r} v={col(doc, "ankle_separation_p50_m")} sd={col(doc, "ankle_separation_sd_m")} /></td>
-                    <td><Pm doc={doc} row={r} v={col(doc, "separation_over_step")} sd={col(doc, "separation_over_step_sd")} /></td>
-                    <td><Pm doc={doc} row={r} v={col(doc, "speed_mean_m_s")} sd={-1} /></td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      ))}
-    </>
+    <Tabs
+      label="Cadence and step: match"
+      tabs={Object.keys(tables.matches).map((match) => ({
+        key: match,
+        label: <MatchTab doc={doc} match={match} />,
+        panel: (
+          <div className="table-scroll">
+            <table data-table="players" data-match={match}>
+              <caption>
+                Match <S doc={doc} p={`protocol.${roleOf(doc, match)}`} />, by team and
+                shirt number, one row per player and band, the whole match
+              </caption>
+              <thead>
+                <tr>
+                  <th>team</th>
+                  <th>no.</th>
+                  <th>player</th>
+                  <th>band</th>
+                  <th>windows</th>
+                  <th>finite in s</th>
+                  <th>cadence, Hz</th>
+                  <th>step, m</th>
+                  <th>ankle separation, m</th>
+                  <th>separation over step</th>
+                  <th>mean speed, m/s</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tables.matches[match].map((row, i) => {
+                  if (row[period] !== "all") return null;
+                  const r = `tables.matches.${match}.${i}`;
+                  return (
+                    <tr key={i} data-row={`${match}.${i}`}>
+                      <td><S doc={doc} p={`${r}.${team}`} /></td>
+                      <td><S doc={doc} p={`${r}.${number}`} /></td>
+                      <td><S doc={doc} p={`${r}.${player}`} /></td>
+                      <td>{String(row[band])}</td>
+                      <td><S doc={doc} p={`${r}.${windows}`} /></td>
+                      <td><S doc={doc} p={`${r}.${finite}`} /></td>
+                      <td><Pm doc={doc} row={r} v={col(doc, "cad_s_p50_hz")} sd={col(doc, "cad_s_sd_hz")} /></td>
+                      <td><Pm doc={doc} row={r} v={col(doc, "step_length_p50_m")} sd={col(doc, "step_length_sd_m")} /></td>
+                      <td><Pm doc={doc} row={r} v={col(doc, "ankle_separation_p50_m")} sd={col(doc, "ankle_separation_sd_m")} /></td>
+                      <td><Pm doc={doc} row={r} v={col(doc, "separation_over_step")} sd={col(doc, "separation_over_step_sd")} /></td>
+                      <td><Pm doc={doc} row={r} v={col(doc, "speed_mean_m_s")} sd={-1} /></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ),
+      }))}
+    />
   );
 }
 
@@ -288,41 +307,48 @@ function Concordance({ doc }: { doc: PoseSummary }) {
           <S doc={doc} p="tables.m3" />.
         </p>
       </details>
-      {Object.keys(tables.matches).map((match) => (
-        <div className="table-scroll" key={match}>
-          <table data-table="m3" data-match={match}>
-            <caption>
-              Match <S doc={doc} p={`protocol.${match === String(doc.protocol.calibration) ? "calibration" : "confirmation"}`} />{": the fast band, by team and shirt number"}
-            </caption>
-            <thead>
-              <tr>
-                <th>no.</th>
-                <th>player</th>
-                <th>windows</th>
-                <th>finite in s</th>
-                <th>median gap between the two cadences, Hz</th>
-                <th>share of windows with no vertical cadence</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tables.matches[match].map((row, i) => {
-                if (row[period] !== "all" || row[band] !== "high" || row[diff] === null) return null;
-                const r = `tables.matches.${match}.${i}`;
-                return (
-                  <tr key={i} data-row={`${match}.${i}`}>
-                    <td><S doc={doc} p={`${r}.${number}`} /></td>
-                    <td><S doc={doc} p={`${r}.${player}`} /></td>
-                    <td><S doc={doc} p={`${r}.${windows}`} /></td>
-                    <td><S doc={doc} p={`${r}.${finite}`} /></td>
-                    <td><S doc={doc} p={`${r}.${diff}`} /></td>
-                    <td><S doc={doc} p={`${r}.${nan}`} /></td>
+      <Tabs
+        label="Where the second signal disagrees: match"
+        tabs={Object.keys(tables.matches).map((match) => ({
+          key: match,
+          label: <MatchTab doc={doc} match={match} />,
+          panel: (
+            <div className="table-scroll">
+              <table data-table="m3" data-match={match}>
+                <caption>
+                  Match <S doc={doc} p={`protocol.${roleOf(doc, match)}`} />{": the fast band, by team and shirt number"}
+                </caption>
+                <thead>
+                  <tr>
+                    <th>no.</th>
+                    <th>player</th>
+                    <th>windows</th>
+                    <th>finite in s</th>
+                    <th>median gap between the two cadences, Hz</th>
+                    <th>share of windows with no vertical cadence</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      ))}
+                </thead>
+                <tbody>
+                  {tables.matches[match].map((row, i) => {
+                    if (row[period] !== "all" || row[band] !== "high" || row[diff] === null) return null;
+                    const r = `tables.matches.${match}.${i}`;
+                    return (
+                      <tr key={i} data-row={`${match}.${i}`}>
+                        <td><S doc={doc} p={`${r}.${number}`} /></td>
+                        <td><S doc={doc} p={`${r}.${player}`} /></td>
+                        <td><S doc={doc} p={`${r}.${windows}`} /></td>
+                        <td><S doc={doc} p={`${r}.${finite}`} /></td>
+                        <td><S doc={doc} p={`${r}.${diff}`} /></td>
+                        <td><S doc={doc} p={`${r}.${nan}`} /></td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ),
+        }))}
+      />
       <h3>What the protocol could not rule out</h3>
       <ul>
         {doc.protocol.blind_spots.map((_, i) => (

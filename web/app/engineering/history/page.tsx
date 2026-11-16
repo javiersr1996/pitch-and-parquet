@@ -9,6 +9,7 @@ import {
 } from "../../../components/platform/HistoryCharts";
 import { Band, PageHead } from "../../../components/site/Band";
 import { type Chapter, Chapters } from "../../../components/site/Chapters";
+import { Fold } from "../../../components/site/Fold";
 import { freshnessRows, HISTORY, MIN_EARLIER, modeSummary, runLabel, sameTestCount, seriesOf, stepMode } from "../../../lib/history";
 import { PLATFORM } from "../../../lib/platform";
 
@@ -168,24 +169,10 @@ export default function HistoryPage() {
           const above = judged.filter((x) => x.verdict === "above");
           const reasons = s.steps.filter((x) => x.lastStep.incremental);
           const id = s.select ?? "complete";
-          return (
-            <section key={id} className="history-series" data-series={id} data-runs={s.runs.length}>
-              <h3>
-                {selectLabel(s.select)} · {s.runs.length} runs, {day(s.runs[0].id)} to{" "}
-                {day(s.runs[s.runs.length - 1].id)}
-              </h3>
-              <p data-verdicts>
-                In its last run, {above.length} of the {judged.length} steps with a threshold are above
-                it
-                {above.length > 0 && (
-                  <>
-                    {" "}
-                    ({above.map((x) => x.step_key).join(", ")})
-                  </>
-                )}
-                ; {s.steps.length - judged.length} of {s.steps.length} have too few earlier runs in their
-                mode.
-              </p>
+          // A partial selection is the lesser series (P32): its verdict stays on show, its strips and
+          // tables fold.
+          const detail = (
+            <>
               <StepStrips series={s} id={`series-${i}`} />
               <p data-reasons>
                 {reasons.length > 0 ? (
@@ -204,6 +191,31 @@ export default function HistoryPage() {
                 )}
               </p>
               <StepTable series={s} />
+            </>
+          );
+          return (
+            <section key={id} className="history-series" data-series={id} data-runs={s.runs.length}>
+              <h3>
+                {selectLabel(s.select)} · {s.runs.length} runs, {day(s.runs[0].id)} to{" "}
+                {day(s.runs[s.runs.length - 1].id)}
+              </h3>
+              <p data-verdicts>
+                In its last run, {above.length} of the {judged.length} steps with a threshold are above
+                it
+                {above.length > 0 && (
+                  <>
+                    {" "}
+                    ({above.map((x) => x.step_key).join(", ")})
+                  </>
+                )}
+                ; {s.steps.length - judged.length} of {s.steps.length} have too few earlier runs in their
+                mode.
+              </p>
+              {s.select === null ? (
+                detail
+              ) : (
+                <Fold summary={`${s.steps.length} steps, run by run: the strips, the reasons and the table`}>{detail}</Fold>
+              )}
             </section>
           );
         })}
