@@ -155,6 +155,34 @@ test("where the wrap leaves room, a rail in the left margin, clear of the conten
   }
 });
 
+test("on a tall screen the last chapter is current at the foot of the page, and only there", async ({ page }) => {
+  for (const [width, height] of [
+    [1920, 1080],
+    [2560, 1440],
+  ]) {
+    await page.setViewportSize({ width, height });
+    for (const [route, last] of [
+      ["/learn/gravity", "Further reading"],
+      ["/engineering/history", "Freshness"],
+      ["/euroleague", "The data"],
+    ]) {
+      await open(page, route);
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+      await expect(current(page), `${route} at ${width}`).toHaveText(last);
+    }
+    // The case the foot rule is for: at the end of a lesson its last heading is still below the top
+    // third of the screen, so its place alone would leave Reproduce it lit.
+    await open(page, "/learn/gravity");
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const top = await page.locator("#reading-h").evaluate((h) => h.getBoundingClientRect().top);
+    expect(top, `at ${width}`).toBeGreaterThan(height / 3);
+    await expect(current(page)).toHaveText("Further reading");
+    // A little way up from the foot, the headings' places decide again.
+    await page.evaluate(() => window.scrollBy(0, -200));
+    await expect(current(page)).toHaveText("Reproduce it");
+  }
+});
+
 test("with reduced motion nothing new moves", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await open(page, "/learn/clock");

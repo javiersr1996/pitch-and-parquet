@@ -18,10 +18,13 @@ function markEdges(ol: HTMLOListElement) {
 // page is. A strip that scrolls sideways under 1888 px, a rail in the left margin from there, where
 // it fits beside the 1376 px wrap. A chapter counts as current once its heading is above the top
 // third of the screen: an IntersectionObserver whose box runs from far above the page down to that
-// line says which headings are above it, and a jump past many of them flips each one. A link goes to
-// its heading like any anchor, and opens the chapter's fold if it has one.
+// line says which headings are above it, and a jump past many of them flips each one. At the foot of
+// the page the last chapter is current, though on a tall screen its heading never climbs that high. A
+// link goes to its heading like any anchor, and opens the chapter's fold if it has one.
 export function Chapters({ items }: { items: readonly Chapter[] }) {
-  const [active, setActive] = useState(-1);
+  const [above, setAbove] = useState(-1);
+  const [atEnd, setAtEnd] = useState(false);
+  const active = atEnd ? items.length - 1 : above;
   const list = useRef<HTMLOListElement>(null);
   const bar = useRef<HTMLSpanElement>(null);
 
@@ -37,7 +40,7 @@ export function Chapters({ items }: { items: readonly Chapter[] }) {
         items.forEach((c, i) => {
           if (above.has(c.id)) last = i;
         });
-        setActive(last);
+        setAbove(last);
       },
       { rootMargin: "1000000px 0px -67% 0px" },
     );
@@ -48,7 +51,8 @@ export function Chapters({ items }: { items: readonly Chapter[] }) {
     return () => io.disconnect();
   }, [items]);
 
-  // The progress bar follows the scroll, once a frame, written straight to its style.
+  // The progress bar follows the scroll, once a frame, written straight to its style; the same frame
+  // says whether the page is at its foot.
   useEffect(() => {
     let frame = 0;
     const draw = () => {
@@ -56,11 +60,12 @@ export function Chapters({ items }: { items: readonly Chapter[] }) {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
       bar.current?.style.setProperty("--progress", String(p));
+      setAtEnd(max > 0 && window.scrollY >= max - 2);
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(draw);
     };
-    draw();
+    frame = requestAnimationFrame(draw);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
