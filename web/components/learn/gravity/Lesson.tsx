@@ -9,6 +9,7 @@ import { Band } from "../../site/Band";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -559,28 +560,25 @@ export function Lesson({ sql }: { sql: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="nist-linear-ls" full /> and <Cite id="nist-ls" full />: least squares, and why a quadratic counts as a
-              linear model.
-            </li>
-            <li>
-              <Cite id="webb-sign-test" full />: the sign test, step by step.
-            </li>
-            <li>
-              <Cite id="cgpm-1901" full /> and <Cite id="codata-gn" full />: where the standard value comes from.
-            </li>
-            <li>
-              <Cite id="skillcorner-tracking" full />: the provider&apos;s definitions of every field in the tracking files.
-            </li>
-            <li>
-              <a href="/engineering/quality">/engineering/quality</a> and the <a href="/engineering/bulletin">bulletin</a>: the check this lesson unpacks,
-              beside the other checks of the bundles.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="nist-linear-ls" full /> and <Cite id="nist-ls" full />: least squares, and why a quadratic counts as a
+            linear model.
+          </li>
+          <li>
+            <Cite id="webb-sign-test" full />: the sign test, step by step.
+          </li>
+          <li>
+            <Cite id="cgpm-1901" full /> and <Cite id="codata-gn" full />: where the standard value comes from.
+          </li>
+          <li>
+            <Cite id="skillcorner-tracking" full />: the provider&apos;s definitions of every field in the tracking files.
+          </li>
+          <li>
+            <a href="/engineering/quality">/engineering/quality</a> and the <a href="/engineering/bulletin">bulletin</a>: the check this lesson unpacks,
+            beside the other checks of the bundles.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures hook={GRAVITY_HOOK} matches={GRAVITY_MATCHES} hypotheses={HYPOTHESES} />
     </main>

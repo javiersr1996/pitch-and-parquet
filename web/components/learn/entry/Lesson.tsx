@@ -8,6 +8,7 @@ import { Band } from "../../site/Band";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -302,25 +303,22 @@ export function Lesson({ script }: { script: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="nasa-ballistic" full />: the flight of a ball without drag, worked out from its two components.
-            </li>
-            <li>
-              <Cite id="fiba-ring" full />: the dimensions of the basket.
-            </li>
-            <li>
-              <Cite id="skillcorner-shot-start" full />: the provider&apos;s definitions of every field of a shot.
-            </li>
-            <li>
-              <a href="/learn/gravity">Does the ball obey gravity?</a>, the first lesson, for the same heights and its two
-              scales, and <a href="/learn/clock">Does the game clock keep the video&apos;s time?</a> for the line through a
-              handful of samples.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="nasa-ballistic" full />: the flight of a ball without drag, worked out from its two components.
+          </li>
+          <li>
+            <Cite id="fiba-ring" full />: the dimensions of the basket.
+          </li>
+          <li>
+            <Cite id="skillcorner-shot-start" full />: the provider&apos;s definitions of every field of a shot.
+          </li>
+          <li>
+            <a href="/learn/gravity">Does the ball obey gravity?</a>, the first lesson, for the same heights and its two
+            scales, and <a href="/learn/clock">Does the game clock keep the video&apos;s time?</a> for the line through a
+            handful of samples.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures file={ENTRY} run={ENTRY_RUN} matches={ENTRY_MATCHES} hookG={HOOK.g_data} />
     </main>

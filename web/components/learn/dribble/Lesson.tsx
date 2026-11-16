@@ -7,6 +7,7 @@ import { Band } from "../../site/Band";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -314,21 +315,18 @@ export function Lesson({ sql }: { sql: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="nist-autocorrelation" full />: what the autocorrelation of a signal shows.
-            </li>
-            <li>
-              <Cite id="skillcorner-dribbles" full />: the provider&apos;s definitions of every field of a dribble.
-            </li>
-            <li>
-              <a href="/learn/cadence">How many steps per second?</a>, the fifth lesson, for the same reading of a rhythm on a
-              body.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="nist-autocorrelation" full />: what the autocorrelation of a signal shows.
+          </li>
+          <li>
+            <Cite id="skillcorner-dribbles" full />: the provider&apos;s definitions of every field of a dribble.
+          </li>
+          <li>
+            <a href="/learn/cadence">How many steps per second?</a>, the fifth lesson, for the same reading of a rhythm on a
+            body.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures file={DRIBBLE} example={TOUCH} />
     </main>

@@ -7,6 +7,7 @@ import { Band } from "../../site/Band";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -314,22 +315,19 @@ export function Lesson({ sql }: { sql: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="nist-survival" full /> and <Cite id="nist-exponential" full />: the survival function and the distribution
-              of a constant rate.
-            </li>
-            <li>
-              <Cite id="skillcorner-possessions" full />: the provider&apos;s definitions of every field of a possession.
-            </li>
-            <li>
-              <a href="/learn/clock">Does the game clock keep the video&apos;s time?</a>, the sixth lesson, for the two clocks a
-              duration can be measured on.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="nist-survival" full /> and <Cite id="nist-exponential" full />: the survival function and the distribution
+            of a constant rate.
+          </li>
+          <li>
+            <Cite id="skillcorner-possessions" full />: the provider&apos;s definitions of every field of a possession.
+          </li>
+          <li>
+            <a href="/learn/clock">Does the game clock keep the video&apos;s time?</a>, the sixth lesson, for the two clocks a
+            duration can be measured on.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures file={POSSESSION} />
     </main>

@@ -1,4 +1,5 @@
 import { expect as baseExpect, type Page, test } from "@playwright/test";
+import { openFold } from "./fold";
 
 // Task 86: "Run it here" on the lessons of P8, and those of P9 as they come. Before Run the page stays under its budget and
 // has fetched nothing of the engine; after Run the query is done, every row it returns names a
@@ -38,6 +39,8 @@ for (const slug of LESSONS) {
     expect(bytes).toBeLessThan(400_000);
     expect(seen.filter(isEngine), "engine requested before Run").toEqual([]);
 
+    // Folded under its heading (P32): opening it loads nothing either.
+    await openFold(page, "reproduce-h");
     const figure = page.locator("figure.run-here");
     await expect(figure).toHaveAttribute("data-engine", "idle");
     await figure.getByRole("button", { name: "Run", exact: true }).click();

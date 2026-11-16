@@ -9,6 +9,7 @@ import { Band } from "../../site/Band";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -299,24 +300,21 @@ export function Lesson({ sql }: { sql: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="nist-linear-ls" full />: what makes a model linear, and why a line is fitted in closed form.
-            </li>
-            <li>
-              <Cite id="nist-residuals" full />: residuals, and reading a fit from them.
-            </li>
-            <li>
-              <Cite id="skillcorner-gameclock" full />: the provider&apos;s definitions of every field of a tracking frame.
-            </li>
-            <li>
-              <a href="/learn/gravity">Does the ball obey gravity?</a>, the first lesson, for the low g and its two suspects, and{" "}
-              <a href="/learn/coordinates">Can a court and a pitch share one table?</a> for the frame clock&apos;s own check.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="nist-linear-ls" full />: what makes a model linear, and why a line is fitted in closed form.
+          </li>
+          <li>
+            <Cite id="nist-residuals" full />: residuals, and reading a fit from them.
+          </li>
+          <li>
+            <Cite id="skillcorner-gameclock" full />: the provider&apos;s definitions of every field of a tracking frame.
+          </li>
+          <li>
+            <a href="/learn/gravity">Does the ball obey gravity?</a>, the first lesson, for the low g and its two suspects, and{" "}
+            <a href="/learn/coordinates">Can a court and a pitch share one table?</a> for the frame clock&apos;s own check.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures file={CLOCK} examples={CLOCK_EXAMPLES} g={HOOK.g_data} G={HOOK.g_real} />
     </main>

@@ -21,3 +21,13 @@ export function formatBytes(n: number): string {
   }
   return `${value.toFixed(1)} ${BYTE_UNITS[unit]}`;
 }
+
+// A small count in words, capitalised to open a sentence ("Six"), for copy the lessons' prose checks
+// read: they allow no digit outside a figure. Past twenty it falls back to the digits.
+const WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven",
+  "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty"];
+
+export function countWord(n: number, capital = false): string {
+  const word = WORDS[n] ?? String(n);
+  return capital ? word[0].toUpperCase() + word.slice(1) : word;
+}

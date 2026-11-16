@@ -5,6 +5,7 @@ import { Band } from "../../site/Band";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -572,28 +573,25 @@ export function Lesson({ script }: { script: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="nist-autocorrelation" full />: the autocorrelation, its two normalisations and its band.
-            </li>
-            <li>
-              <Cite id="smith-parabola" full />: the parabola through a peak, derived.
-            </li>
-            <li>
-              <Cite id="nist-propagation" full /> and <Cite id="jcgm-101" full />: the propagation of error formula, and when
-              to draw instead.
-            </li>
-            <li>
-              <Cite id="skillcorner-bodypose" full />: the provider&apos;s description of the joints, their error and their
-              limits.
-            </li>
-            <li>
-              <a href="/tracking/pose">/tracking/pose</a>: the viewer, the protocol and every player&apos;s row this lesson draws.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="nist-autocorrelation" full />: the autocorrelation, its two normalisations and its band.
+          </li>
+          <li>
+            <Cite id="smith-parabola" full />: the parabola through a peak, derived.
+          </li>
+          <li>
+            <Cite id="nist-propagation" full /> and <Cite id="jcgm-101" full />: the propagation of error formula, and when
+            to draw instead.
+          </li>
+          <li>
+            <Cite id="skillcorner-bodypose" full />: the provider&apos;s description of the joints, their error and their
+            limits.
+          </li>
+          <li>
+            <a href="/tracking/pose">/tracking/pose</a>: the viewer, the protocol and every player&apos;s row this lesson draws.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures hooks={HOOKS} fast={FAST_ROWS} />
     </main>

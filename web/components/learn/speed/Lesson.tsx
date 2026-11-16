@@ -8,6 +8,7 @@ import { Band } from "../../site/Band";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -563,28 +564,25 @@ export function Lesson({ sql }: { sql: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="dlmf-differentiation" full />: the two- and three-point formulas and their remainders.
-            </li>
-            <li>
-              <Cite id="scipy-savgol" full />: the Savitzky-Golay filter as most Python code calls it.
-            </li>
-            <li>
-              <Cite id="shaw-velocities" full />: a complete velocity recipe for tracking data, short enough to read in one
-              sitting.
-            </li>
-            <li>
-              <Cite id="skillcorner-speed" full />: the provider&apos;s definitions of every field in the tracking files.
-            </li>
-            <li>
-              <a href="/learn/gravity">Does the ball obey gravity?</a>, the first lesson, for least squares and centring;{" "}
-              <a href="/engineering/quality">/engineering/quality</a> and the <a href="/engineering/bulletin">bulletin</a> for the clock check.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="dlmf-differentiation" full />: the two- and three-point formulas and their remainders.
+          </li>
+          <li>
+            <Cite id="scipy-savgol" full />: the Savitzky-Golay filter as most Python code calls it.
+          </li>
+          <li>
+            <Cite id="shaw-velocities" full />: a complete velocity recipe for tracking data, short enough to read in one
+            sitting.
+          </li>
+          <li>
+            <Cite id="skillcorner-speed" full />: the provider&apos;s definitions of every field in the tracking files.
+          </li>
+          <li>
+            <a href="/learn/gravity">Does the ball obey gravity?</a>, the first lesson, for least squares and centring;{" "}
+            <a href="/engineering/quality">/engineering/quality</a> and the <a href="/engineering/bulletin">bulletin</a> for the clock check.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures example={SPEED_EXAMPLE} file={SPEED} />
     </main>

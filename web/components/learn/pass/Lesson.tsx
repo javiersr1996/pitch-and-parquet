@@ -7,6 +7,7 @@ import { Band } from "../../site/Band";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -308,21 +309,18 @@ export function Lesson({ sql }: { sql: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="mathworld-chord" full /> and <Cite id="mathworld-arc-length" full />: the two lengths of a curve.
-            </li>
-            <li>
-              <Cite id="skillcorner-pass-distance" full />: the provider&apos;s definitions of every field of a pass.
-            </li>
-            <li>
-              <a href="/learn/speed">Where does the provider&apos;s speed come from?</a>, the second lesson, for speed at one frame
-              rather than over a pass.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="mathworld-chord" full /> and <Cite id="mathworld-arc-length" full />: the two lengths of a curve.
+          </li>
+          <li>
+            <Cite id="skillcorner-pass-distance" full />: the provider&apos;s definitions of every field of a pass.
+          </li>
+          <li>
+            <a href="/learn/speed">Where does the provider&apos;s speed come from?</a>, the second lesson, for speed at one frame
+            rather than over a pass.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures file={PASS} examples={PASS_EXAMPLES} />
     </main>

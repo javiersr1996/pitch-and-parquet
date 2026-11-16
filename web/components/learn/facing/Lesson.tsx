@@ -5,6 +5,7 @@ import { Band } from "../../site/Band";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -450,26 +451,23 @@ export function Lesson({ script }: { script: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="scipy-circmean" full /> and <Cite id="scipy-circvar" full />: the mean resultant vector, its argument and its
-              length, as a library defines them.
-            </li>
-            <li>
-              <Cite id="skillcorner-bodypose-joints" full />: the provider&apos;s description of the joints, their coordinates and their
-              limits.
-            </li>
-            <li>
-              <a href="/learn/speed">Where does the provider&apos;s speed come from?</a>, the second lesson, for the central difference,
-              and <a href="/learn/cadence">How many steps per second?</a>, the fifth, for the same two clips read from the ankles.
-            </li>
-            <li>
-              <a href="/tracking/pose">/tracking/pose</a>: the viewer and the protocol behind the clips.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="scipy-circmean" full /> and <Cite id="scipy-circvar" full />: the mean resultant vector, its argument and its
+            length, as a library defines them.
+          </li>
+          <li>
+            <Cite id="skillcorner-bodypose-joints" full />: the provider&apos;s description of the joints, their coordinates and their
+            limits.
+          </li>
+          <li>
+            <a href="/learn/speed">Where does the provider&apos;s speed come from?</a>, the second lesson, for the central difference,
+            and <a href="/learn/cadence">How many steps per second?</a>, the fifth, for the same two clips read from the ankles.
+          </li>
+          <li>
+            <a href="/tracking/pose">/tracking/pose</a>: the viewer and the protocol behind the clips.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures clips={FACING} />
     </main>

@@ -4370,3 +4370,70 @@ figure.run-here {
 .skip-link:focus-visible {
   transform: none;
 }
+
+/* A fold (P32, task 209): reference material under its heading, one click away and still in the
+   HTML. The summary is a control in the neon line (a fine cyan edge, mono, a card's fill) that says
+   what is inside and how much; a plus that turns to a minus says whether it is open. */
+.fold > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  max-width: var(--measure);
+  min-height: var(--control-height);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--raised);
+  font-family: var(--font-neon);
+  font-weight: 600;
+  color: var(--link);
+  cursor: pointer;
+  list-style: none;
+}
+
+.fold > summary::-webkit-details-marker {
+  display: none;
+}
+
+.fold > summary::after {
+  content: "+" / "";
+  flex: none;
+  font-size: var(--step-3);
+  line-height: 1;
+}
+
+.fold[open] > summary::after {
+  content: "\2212" / "";
+}
+
+.fold > summary:hover {
+  border-color: var(--neon);
+  color: var(--link-hover);
+  box-shadow: 0 0 24px -8px var(--neon-glow);
+}
+
+.fold > summary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.fold[open] > summary {
+  margin-bottom: var(--space-5);
+}
+
+.fold-body > :first-child {
+  margin-top: 0;
+}
+
+.fold-body > :last-child {
+  margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fold > summary {
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+  }
+}

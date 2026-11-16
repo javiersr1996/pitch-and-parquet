@@ -17,6 +17,7 @@ import { Band } from "../../site/Band";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -515,26 +516,23 @@ export function Lesson({ sql }: { sql: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="mathworld-affine" full /> and <Cite id="mathworld-rotation" full />: affine maps, and why a
-              determinant tells a turn from a mirror.
-            </li>
-            <li>
-              <Cite id="nist-811-b8" full />: the exact factors between customary units and the SI.
-            </li>
-            <li>
-              <Cite id="skillcorner-bb-coords" full />, <Cite id="skillcorner-bb-lefthoop" full /> and{" "}
-              <Cite id="skillcorner-fb-coords" full />: the providers&apos; own conventions.
-            </li>
-            <li>
-              <a href="/engineering/quality">/engineering/quality</a>: the clock check behind the first columns of the table, beside the other
-              checks of the bundles.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="mathworld-affine" full /> and <Cite id="mathworld-rotation" full />: affine maps, and why a
+            determinant tells a turn from a mirror.
+          </li>
+          <li>
+            <Cite id="nist-811-b8" full />: the exact factors between customary units and the SI.
+          </li>
+          <li>
+            <Cite id="skillcorner-bb-coords" full />, <Cite id="skillcorner-bb-lefthoop" full /> and{" "}
+            <Cite id="skillcorner-fb-coords" full />: the providers&apos; own conventions.
+          </li>
+          <li>
+            <a href="/engineering/quality">/engineering/quality</a>: the clock check behind the first columns of the table, beside the other
+            checks of the bundles.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures figures={F} />
     </main>

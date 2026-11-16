@@ -1,4 +1,5 @@
 import { type ConsoleMessage, expect as baseExpect, type Page, test } from "@playwright/test";
+import { openFold } from "./fold";
 
 // P19, task 159: the Content-Security-Policy-Report-Only of next.config.ts. A browser that would
 // have blocked something says so in the console ("[Report Only] Refused to ..."), and the page
@@ -102,6 +103,7 @@ test("a lesson's Run it here runs DuckDB-WASM and read_json inside the policy", 
   test.setTimeout(300_000);
   const csp = await watch(page);
   await page.goto("/learn/speed");
+  await openFold(page, "reproduce-h");
   const figure = page.locator("figure.run-here");
   await figure.getByLabel("SQL").fill("SELECT count(*) AS n FROM read_json('/data/learn/speed.json')");
   await figure.getByRole("button", { name: "Run", exact: true }).click();

@@ -7,6 +7,7 @@ import { Band } from "../../site/Band";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -436,17 +437,14 @@ export function Lesson({ sql }: { sql: string }) {
           </p>
         </section>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="mathworld-expectation" full />: the expected value of a random variable.
-            </li>
-            <li>
-              <a href="/euroleague">Where EuroLeague shoots from</a>: the same feed, binned into hexagons on the court.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="mathworld-expectation" full />: the expected value of a random variable.
+          </li>
+          <li>
+            <a href="/euroleague">Where EuroLeague shoots from</a>: the same feed, binned into hexagons on the court.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures file={FILE} />
     </main>

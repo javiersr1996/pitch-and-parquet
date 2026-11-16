@@ -6,6 +6,7 @@ import { Band } from "../../site/Band";
 import { Cite, Quote } from "../Cite";
 import { Fig } from "../Fig";
 import { Formula, M } from "../Formula";
+import { FurtherReading } from "../FurtherReading";
 import { LessonHead } from "../LessonHead";
 import { Limitations } from "../Limitations";
 import { Reproduce } from "../Reproduce";
@@ -413,25 +414,22 @@ export function Lesson({ sql }: { sql: string }) {
           </p>
         </Reproduce>
 
-        <section aria-labelledby="reading-h">
-          <h2 id="reading-h">Further reading</h2>
-          <ul>
-            <li>
-              <Cite id="spearman-2018" full />: the time to arrive, its logistic spread and the model of control built on them.
-            </li>
-            <li>
-              <Cite id="shaw-tti" full />: a short, readable implementation of the same model, with every parameter in one
-              place.
-            </li>
-            <li>
-              <Cite id="skillcorner-rebound-location" full />: the provider&apos;s definitions of every field of a rebound.
-            </li>
-            <li>
-              <a href="/learn/speed">Where does the provider&apos;s speed come from?</a>, the second lesson, for the central
-              difference that gives every velocity here.
-            </li>
-          </ul>
-        </section>
+        <FurtherReading>
+          <li>
+            <Cite id="spearman-2018" full />: the time to arrive, its logistic spread and the model of control built on them.
+          </li>
+          <li>
+            <Cite id="shaw-tti" full />: a short, readable implementation of the same model, with every parameter in one
+            place.
+          </li>
+          <li>
+            <Cite id="skillcorner-rebound-location" full />: the provider&apos;s definitions of every field of a rebound.
+          </li>
+          <li>
+            <a href="/learn/speed">Where does the provider&apos;s speed come from?</a>, the second lesson, for the central
+            difference that gives every velocity here.
+          </li>
+        </FurtherReading>
       </Band>
       <ExposeFigures file={REBOUND} />
     </main>
