@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openFold } from "./fold";
 
 // `components/platform/Lineage.tsx` (task 36): a hand-written SVG graph plus
 // two server-rendered tables on `/engineering`. The closure test below computes
@@ -98,6 +99,7 @@ test("clicking silver_frames lights exactly its ancestor and descendant closures
   expect(down.size).toBeGreaterThan(0);
 
   await page.goto("/engineering");
+  await openFold(page, "lineage");
   await page.locator('[data-node="silver_frames"]').click();
 
   // Scoped to `[data-node]`: edges carry the same `data-lit` values on their
@@ -173,6 +175,14 @@ test("no horizontal page scroll at phone width", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 800 });
   await page.goto("/engineering");
   await page.waitForLoadState("networkidle");
+  // Every fold open (P32, P32b): closed, the graph and the tables have no box to overflow.
+  const folds = await page.evaluate(() => {
+    const all = [...document.querySelectorAll<HTMLDetailsElement>("details.fold")];
+    all.forEach((d) => (d.open = true));
+    return all.length;
+  });
+  expect(folds).toBe(3);
+  await expect(page.locator("figure.lineage")).toBeVisible();
 
   const overflowing = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
@@ -185,6 +195,7 @@ test("the node panel renders code spans without backticks and fits at 390 px", a
   const lineage = (await (await page.request.get("/data/lineage.json")).json()) as LineageJson;
   const withTicks = lineage.nodes.find((n) => n.description.includes("`"))!;
   await page.goto("/engineering");
+  await openFold(page, "lineage");
   await page.locator(`[data-node="${withTicks.key}"]`).focus();
   const panel = page.locator("[data-lineage-detail]");
   await expect(panel).toContainText(withTicks.key);

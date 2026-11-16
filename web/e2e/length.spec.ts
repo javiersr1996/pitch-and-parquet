@@ -16,7 +16,7 @@ const MEASURED: Record<string, number> = {
   "/": 7212,
   "/tracking": 2964,
   "/tracking/replay": 2376,
-  "/engineering": 15287,
+  "/engineering": 9343,
   "/engineering/quality": 5642,
   "/warehouse": 5874,
   "/warehouse/scouting": 4670,

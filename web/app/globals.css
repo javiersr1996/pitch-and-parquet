@@ -4646,3 +4646,45 @@ html:has([data-chapters]) {
     scroll-snap-align: start;
   }
 }
+
+/* /engineering on a narrow screen (P32b, task 214): where the layers, the sources and the
+   guarantees would stack in one column, each is a row that scrolls sideways and snaps card by
+   card, the next card showing at the edge. The architecture above stays whole: it is the overview.
+   The row's padding leaves room for a focus ring. */
+@media (width < 560px) {
+  .platform-layers {
+    grid-template-columns: none;
+    grid-auto-columns: 85%;
+    grid-auto-flow: column;
+    margin-inline: -4px;
+    padding: 4px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: 4px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .platform-layer {
+    scroll-snap-align: start;
+  }
+}
+
+@media (width < 900px) {
+  .platform-sources,
+  .platform-guarantees {
+    grid-template-columns: none;
+    grid-auto-columns: min(85%, 26rem);
+    grid-auto-flow: column;
+    margin-inline: -4px;
+    padding: 4px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: 4px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .platform-sources > li,
+  .platform-guarantees > li {
+    scroll-snap-align: start;
+  }
+}

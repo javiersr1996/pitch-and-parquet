@@ -125,6 +125,67 @@ test("/engineering/history folds the partial selections, never the complete buil
   }
 });
 
+// P32b, task 214: /engineering, shorter. On a phone the layers, the sources and the guarantees are
+// rows that scroll sideways; the architecture stays whole; the lineage graph folds.
+const ROWS = [".platform-layers", ".platform-sources", ".platform-guarantees"];
+
+test("/engineering on a phone: three sideways rows, the architecture whole, the page no wider", async ({ page }) => {
+  await page.setViewportSize(PHONE);
+  await page.goto("/engineering");
+  for (const sel of ROWS) {
+    const row = await page.locator(sel).evaluate((el) => ({
+      scrolls: el.scrollWidth > el.clientWidth,
+      snap: getComputedStyle(el).scrollSnapType,
+      tops: new Set([...el.children].map((c) => Math.round(c.getBoundingClientRect().top))).size,
+      cards: el.children.length,
+    }));
+    expect(row.cards, sel).toBeGreaterThanOrEqual(3);
+    expect(row.scrolls, sel).toBe(true);
+    expect(row.snap, sel).toBe("x mandatory");
+    expect(row.tops, sel).toBe(1);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(PHONE.width);
+  // The overview is not in a row or a fold, and fits the width.
+  const arch = page.locator("figure.arch");
+  await expect(arch).toBeVisible();
+  expect(await arch.evaluate((f) => !!f.closest("details, .platform-layers"))).toBe(false);
+  expect((await arch.boundingBox())!.width).toBeLessThanOrEqual(PHONE.width);
+  // The layers' row has no link to tab to, so it takes the focus itself and the arrows scroll it.
+  const layers = page.locator(".platform-layers");
+  await layers.focus();
+  await expect(layers).toBeFocused();
+  await page.keyboard.press("ArrowRight");
+  await expect.poll(() => layers.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
+});
+
+test("/engineering on a desktop: the rows are the grids they were", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/engineering");
+  for (const sel of ROWS) {
+    expect(await page.locator(sel).evaluate((el) => el.scrollWidth > el.clientWidth), sel).toBe(false);
+  }
+  // Six layers in one line, the sources in two columns.
+  const tops = (sel: string) =>
+    page.locator(`${sel} > *`).evaluateAll((els) => new Set(els.map((e) => Math.round(e.getBoundingClientRect().top))).size);
+  expect(await tops(".platform-layers")).toBe(1);
+  expect(await tops(".platform-sources")).toBe(2);
+});
+
+test("/engineering folds the lineage graph, its summary counting what lineage.json has", async ({ page }) => {
+  const lineage = (await (await page.request.get("/data/lineage.json")).json()) as { nodes: unknown[]; edges: unknown[] };
+  await page.goto("/engineering");
+  await hydrated(page);
+  const fold = page.locator('details[data-fold="lineage"]');
+  await expect(fold).not.toHaveAttribute("open");
+  await expect(fold.locator("figure.lineage")).toBeHidden();
+  await expect(fold.locator(":scope > summary")).toHaveText(
+    `The asset graph: ${lineage.nodes.length} nodes and ${lineage.edges.length} edges, to hover or tap`,
+  );
+  await page.locator('.chapters a[href="#lineage"]').click();
+  await expect(fold).toHaveAttribute("open", "");
+  await expect(fold.locator("figure.lineage")).toBeVisible();
+});
+
 test.describe("Explore on the home", () => {
   test("on a phone, one row that scrolls sideways and snaps, inside the page's width", async ({ page }) => {
     await page.setViewportSize(PHONE);

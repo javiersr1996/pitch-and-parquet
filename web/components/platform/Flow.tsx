@@ -40,7 +40,8 @@ export function Flow({ layers }: { layers: PlatformLayer[] }) {
 
   return (
     <figure ref={el} className="platform" data-state={phase}>
-      <div className="platform-layers">
+      {/* A row that scrolls sideways on a phone (P32b): a stop for the keyboard to scroll it by. */}
+      <div className="platform-layers" tabIndex={0} role="group" aria-label="The pipeline's layers, in order">
         {layers.map((layer) => {
           const bytes = valueAt(layer.bytes, t);
 
