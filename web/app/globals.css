@@ -4444,7 +4444,8 @@ figure.run-here {
    its h2s that scrolls sideways like the header's (faded at an edge where more wait), the current
    one lit like the header's current link, and a cyan bar along the bottom for how far down the page
    is. From 1888 px the wrap leaves room in the left margin, and the strip turns into a rail there.
-   A heading that a link or the address lands on clears the strip. */
+   Whatever the page scrolls into view clears the strip: a heading a link or the address lands on,
+   and a control the keyboard focuses (WCAG 2.4.11). */
 .chapters {
   position: sticky;
   top: 0;
@@ -4519,8 +4520,8 @@ figure.run-here {
   transform-origin: left;
 }
 
-main:has(> .chapters) [id] {
-  scroll-margin-top: 4rem;
+html:has([data-chapters]) {
+  scroll-padding-top: 4rem;
 }
 
 @media (max-width: 117.98rem) {

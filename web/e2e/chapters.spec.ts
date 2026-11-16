@@ -111,6 +111,22 @@ test.describe("on a phone", () => {
     await expect(fold).toHaveAttribute("open", "");
   });
 
+  test("Shift+Tab onto a control half under the strip scrolls it clear (WCAG 2.4.11)", async ({ page }) => {
+    await open(page, "/learn/clock");
+    const summary = page.locator('details[data-fold="limitations-h"] > summary');
+    await summary.focus();
+    await page.keyboard.press("Tab");
+    await expect(summary).not.toBeFocused();
+    // The summary's top a few pixels from the screen's, under the strip; the focus on what follows it.
+    await summary.evaluate((s) => window.scrollBy(0, s.getBoundingClientRect().top - 10));
+    expect(await summary.evaluate((s) => Math.round(s.getBoundingClientRect().top))).toBe(10);
+    await page.keyboard.press("Shift+Tab");
+    await expect(summary).toBeFocused();
+    const strip = (await page.locator(".chapters").boundingBox())!;
+    const box = (await summary.boundingBox())!;
+    expect(box.y).toBeGreaterThanOrEqual(strip.y + strip.height);
+  });
+
   test("the keyboard reaches the strip and follows a link", async ({ page }) => {
     await open(page, "/learn/possession");
     const link = page.locator('.chapters a[href="#reading-h"]');
