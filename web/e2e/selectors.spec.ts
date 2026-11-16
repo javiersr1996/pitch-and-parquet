@@ -206,6 +206,19 @@ test.describe("Explore on the home", () => {
     await expect(last).toBeInViewport();
   });
 
+  test("one breakpoint: a row at 639 px, two columns at 640 px", async ({ page }) => {
+    await page.goto("/");
+    const layout = () =>
+      page.locator(".home-explore .cards").evaluate((ul) => ({
+        flow: getComputedStyle(ul).gridAutoFlow,
+        columns: getComputedStyle(ul).gridTemplateColumns.split(" ").length,
+      }));
+    await page.setViewportSize({ width: 639, height: 900 });
+    expect((await layout()).flow).toBe("column");
+    await page.setViewportSize({ width: 640, height: 900 });
+    expect(await layout()).toEqual({ flow: "row", columns: 2 });
+  });
+
   test("on a desktop, the grid as before: several rows, nothing to scroll", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
